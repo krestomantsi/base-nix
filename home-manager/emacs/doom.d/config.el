@@ -6,7 +6,7 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
-(setq user-full-name "Josh Niemelä"
+(setq user-full-name "nick"
       user-mail-address "josh@jniemela.dk")
 
 
