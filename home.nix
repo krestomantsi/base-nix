@@ -6,7 +6,6 @@
   home.username = "nick";
   home.homeDirectory = "/home/nick";
 
-  #imports = [./home-manager/emacs];
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -19,6 +18,7 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
+  imports = [./home-manager/emacs];
   home.packages = [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
