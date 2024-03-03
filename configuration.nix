@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs,inputs, ... }:
 
 {
   imports =
@@ -92,6 +92,13 @@
     #  thunderbird
     ];
   };
+  home-manager = {
+  # also pass inputs to home-manager modules
+  extraSpecialArgs = {inherit inputs;};
+  users = {
+    "nick" = import ./home.nix;
+  };
+};
 
   # Enable automatic login for the user.
   services.xserver.displayManager.autoLogin.enable = true;
