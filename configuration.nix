@@ -103,6 +103,7 @@
       zoxide
       telegram-desktop
       discord
+      gnome-extension-manager
     #  thunderbird
     ];
   };
