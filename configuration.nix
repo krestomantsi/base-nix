@@ -78,6 +78,9 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = (_: true);
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nick = {
@@ -98,6 +101,8 @@
       kitty
       zellij
       zoxide
+      telegram-desktop
+      discord
     #  thunderbird
     ];
   };
@@ -117,8 +122,6 @@
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

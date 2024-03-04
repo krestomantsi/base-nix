@@ -20,6 +20,7 @@
   # environment.
   imports = [./home-manager/emacs
      	     ./home-manager/languages/julia
+     	     ./home-manager/languages/python.nix
   ];
   home.packages = [
     # # Adds the 'hello' command to your environment. It prints a friendly
