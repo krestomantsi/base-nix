@@ -6,6 +6,7 @@
   home.username = "nick";
   home.homeDirectory = "/home/nick";
 
+  nixpkgs.config.allowUnfree=true;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -79,7 +80,6 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
   programs.zsh = {
     enable = true;
     enableCompletion = true;
