@@ -92,12 +92,12 @@
       git
       rust-analyzer
       rustup
-      gcc
       julia
       htop
       kitty
       zellij
       zoxide
+      eza
       telegram-desktop
       discord
       gnome-extension-manager
@@ -109,6 +109,9 @@
       python311Packages.virtualenv
       starship
       neofetch
+      thefuck
+      gcc
+      poetry
     ];
   };
 
@@ -177,4 +180,5 @@
  };
 
  users.defaultUserShell = pkgs.zsh;
+ nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }
