@@ -106,6 +106,8 @@
       texliveFull
       python311Packages.pip
       python311Packages.virtualenv
+      starship
+      neofetch
     ];
   };
 
@@ -154,4 +156,24 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
 
+  # zsh 
+  programs.zsh = {
+  enable = true;
+  enableCompletion = true;
+  enableAutosuggestions = true;
+  syntaxHighlighting.enable = true;
+
+  shellAliases = {
+    ll = "ls -l";
+    update = "sudo nixos-rebuild switch";
+  };
+  # Your zsh config
+  oh-my-zsh = {
+    enable = true;
+    plugins = [ "git" "thefuck" ];
+    theme = "robbyrussell";
+  };
+ };
+
+ users.defaultUserShell = pkgs.zsh;
 }
