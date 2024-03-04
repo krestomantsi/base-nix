@@ -104,9 +104,12 @@
       telegram-desktop
       discord
       gnome-extension-manager
+      fzf
     #  thunderbird
     ];
   };
+  programs.zsh.enable = true;
+
   home-manager = {
   # also pass inputs to home-manager modules
   extraSpecialArgs = {inherit inputs;};
