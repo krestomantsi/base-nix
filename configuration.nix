@@ -87,8 +87,17 @@
     packages = with pkgs; [
       firefox
       neovim 
+      helix
       ranger
       git
+      rust-analyzer
+      rustup
+      gcc
+      julia
+      htop
+      kitty
+      zellij
+      zoxide
     #  thunderbird
     ];
   };

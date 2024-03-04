@@ -1,8 +1,8 @@
 (setq user-full-name "Nick Lamprinidis"
       user-mail-address "nlampri@gmail.com")
 
-(setq doom-font (font-spec :family "Fira Code" :size 18 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Code" :size 18))
+;;(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 18 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "FiraCode" :size 18))
 
 ;;(setq doom-theme 'doom-one)
 (setq doom-theme 'catppuccin)
