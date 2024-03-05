@@ -11,9 +11,8 @@
     ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/vda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -112,6 +111,11 @@
       thefuck
       gcc
       poetry
+      lazygit
+      gnome.gnome-boxes
+      libvirt
+      libreoffice
+      ripgrep
     ];
   };
 
@@ -181,4 +185,7 @@
 
  users.defaultUserShell = pkgs.zsh;
  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+ virtualisation.libvirtd.enable = true;
+ programs.virt-manager.enable = true;
 }
