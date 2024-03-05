@@ -1,9 +1,0 @@
-root=/home/josh/
-root=ssh://jniemela.dk//home/josh/
-
-ignore = Name VirtualBox\ VMs
-ignore = Name .*
-ignorenot = Name .git
-ignore = Name Games
-ignore = Name nosync
-perms=0
