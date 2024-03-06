@@ -126,7 +126,6 @@
       nodejs
       fd
       alacritty
-      cudatoolkit
     ];
   };
 
