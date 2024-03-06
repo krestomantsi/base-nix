@@ -120,6 +120,12 @@
       tmux
       gfortran
       fortran-fpm
+      gnomeExtensions.dash-to-dock
+      gnomeExtensions.caffeine
+      gnomeExtensions.blur-my-shell
+      nodejs
+      fd
+      alacritty
     ];
   };
 
