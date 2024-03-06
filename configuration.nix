@@ -84,6 +84,7 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
+      gcc
       firefox
       neovim 
       helix
@@ -109,7 +110,6 @@
       starship
       neofetch
       thefuck
-      gcc
       poetry
       lazygit
       gnome.gnome-boxes
@@ -117,11 +117,14 @@
       libreoffice
       ripgrep
       engauge-digitizer
+      tmux
+      gfortran
+      fortran-fpm
     ];
   };
 
   # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = true;
+  services.xserver.displayManager.autoLogin.enable = false;
   services.xserver.displayManager.autoLogin.user = "nick";
 
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
@@ -195,6 +198,9 @@
  programs.nix-ld.libraries = with pkgs; [
    # Add any missing dynamic libraries for unpackaged
    # programs here, NOT in environment.systemPackages
+   gcc
+   glibc
+   zlib
  ];
 
 }
