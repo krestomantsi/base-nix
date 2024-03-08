@@ -49,39 +49,6 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
-  # i3 begin
-  # programs.nm-applet.enable = true;
-  # environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw
-  # fonts.fonts = with pkgs; [ nerdfonts ];
-
-  # # services.xserver.windowManager.i3.package = pkgs.i3-gaps;
-  # services.xserver = {
-  #   enable = true;
-
-  #   desktopManager = {
-  #     xterm.enable = false;
-  #   };
-
-  #   displayManager = {
-  #       defaultSession = "none+i3";
-  #   };
-
-  #   windowManager.i3 = {
-  #     enable = true;
-  #     extraPackages = with pkgs; [
-  #       dmenu #application launcher most people use
-  #       i3status # gives you the default i3 status bar
-  #       i3lock #default i3 screen locker
-  #       i3blocks #if you are planning on using i3blocks over i3status
-  #       rofi
-  #       flameshot
-  #       feh
-  #       picom
-  #    ];
-  #   };
-  # };
-  # i3 end
-  # Configure keymap in X11
   services.xserver = {
     layout = "us";
     xkbVariant = "";
@@ -247,5 +214,26 @@
   remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
   dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
  };
+
+ # cuda stuff
+ nixpkgs.config.cudaSupport = true;
+ services.xserver.videoDrivers = ["nvidia"];
+ #  hardware.opengl = {
+ #    enable = true;
+ #    driSupport = true;
+ #    driSupport32Bit = true;
+ #  };
+
+ #  hardware.nvidia = {
+ #    modesetting.enable = true;
+ #    open = false;
+ #    nvidiaSettings = true;
+ #  };
+
+ #  systemd.services.nvidia-control-devices = {
+ #    wantedBy = [ "multi-user.target" ];
+ #    serviceConfig.ExecStart = "${pkgs.linuxPackages.nvidia_x11.bin}/bin/nvidia-smi";
+ #  };
+
 
 }
