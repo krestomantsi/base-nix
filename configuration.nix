@@ -42,13 +42,45 @@
     LC_TIME = "el_GR.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
 
+  # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
+  services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
+  # i3 begin
+  # programs.nm-applet.enable = true;
+  # environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw
+  # fonts.fonts = with pkgs; [ nerdfonts ];
+
+  # # services.xserver.windowManager.i3.package = pkgs.i3-gaps;
+  # services.xserver = {
+  #   enable = true;
+
+  #   desktopManager = {
+  #     xterm.enable = false;
+  #   };
+
+  #   displayManager = {
+  #       defaultSession = "none+i3";
+  #   };
+
+  #   windowManager.i3 = {
+  #     enable = true;
+  #     extraPackages = with pkgs; [
+  #       dmenu #application launcher most people use
+  #       i3status # gives you the default i3 status bar
+  #       i3lock #default i3 screen locker
+  #       i3blocks #if you are planning on using i3blocks over i3status
+  #       rofi
+  #       flameshot
+  #       feh
+  #       picom
+  #    ];
+  #   };
+  # };
+  # i3 end
   # Configure keymap in X11
   services.xserver = {
     layout = "us";
@@ -84,6 +116,12 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
+      gnome.gnome-boxes
+      gnomeExtensions.dash-to-dock
+      gnomeExtensions.caffeine
+      gnomeExtensions.blur-my-shell
+      gnome-extension-manager
+      gnome.gnome-tweaks
       gcc
       firefox
       neovim 
@@ -100,19 +138,15 @@
       eza
       telegram-desktop
       discord
-      gnome-extension-manager
       fzf
       emacsNativeComp
       nerdfonts
       texliveFull
-      python311Packages.pip
-      python311Packages.virtualenv
       starship
       neofetch
       thefuck
       poetry
       lazygit
-      gnome.gnome-boxes
       libvirt
       libreoffice
       ripgrep
@@ -120,12 +154,10 @@
       tmux
       gfortran
       fortran-fpm
-      gnomeExtensions.dash-to-dock
-      gnomeExtensions.caffeine
-      gnomeExtensions.blur-my-shell
       nodejs
       fd
       alacritty
+      unzip
     ];
   };
 
@@ -200,14 +232,14 @@
  programs.virt-manager.enable = true;
 
  # ld fix
- programs.nix-ld.enable = true;
- programs.nix-ld.libraries = with pkgs; [
-   # Add any missing dynamic libraries for unpackaged
-   # programs here, NOT in environment.systemPackages
-   gcc
-   glibc
-   zlib
- ];
+ # programs.nix-ld.enable = true;
+ # programs.nix-ld.libraries = with pkgs; [
+ #   # Add any missing dynamic libraries for unpackaged
+ #   # programs here, NOT in environment.systemPackages
+ #   gcc
+ #   glibc
+ #   zlib
+ # ];
 
  # steam stuff
  programs.steam = {
