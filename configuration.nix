@@ -97,7 +97,7 @@
       git
       rust-analyzer
       rustup
-      julia
+      #julia
       htop
       kitty
       zellij
@@ -199,14 +199,14 @@
  programs.virt-manager.enable = true;
 
  # ld fix
- # programs.nix-ld.enable = true;
- # programs.nix-ld.libraries = with pkgs; [
- #   # Add any missing dynamic libraries for unpackaged
- #   # programs here, NOT in environment.systemPackages
- #   gcc
- #   glibc
- #   zlib
- # ];
+ programs.nix-ld.enable = true;
+ programs.nix-ld.libraries = with pkgs; [
+   # Add any missing dynamic libraries for unpackaged
+   # programs here, NOT in environment.systemPackages
+   gcc
+   glibc
+   zlib
+ ];
 
  # steam stuff
  programs.steam = {
