@@ -97,7 +97,7 @@
       git
       rust-analyzer
       rustup
-      #julia
+      julia-bin
       htop
       kitty
       zellij
