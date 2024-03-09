@@ -235,5 +235,4 @@
  #    serviceConfig.ExecStart = "${pkgs.linuxPackages.nvidia_x11.bin}/bin/nvidia-smi";
  #  };
 
-
 }
