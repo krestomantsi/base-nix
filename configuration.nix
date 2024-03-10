@@ -112,7 +112,6 @@
       starship
       neofetch
       thefuck
-      poetry
       lazygit
       libvirt
       libreoffice
@@ -219,17 +218,17 @@
  # cuda stuff
  nixpkgs.config.cudaSupport = true;
  services.xserver.videoDrivers = ["nvidia"];
- #  hardware.opengl = {
- #    enable = true;
- #    driSupport = true;
- #    driSupport32Bit = true;
- #  };
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+  };
 
- #  hardware.nvidia = {
- #    modesetting.enable = true;
- #    open = false;
- #    nvidiaSettings = true;
- #  };
+  # hardware.nvidia = {
+  #   modesetting.enable = true;
+  #   open = false;
+  #   nvidiaSettings = true;
+  # };
 
  #  systemd.services.nvidia-control-devices = {
  #    wantedBy = [ "multi-user.target" ];
