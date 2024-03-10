@@ -125,6 +125,7 @@
       fd
       alacritty
       unzip
+      transmission-gtk
     ];
   };
 
