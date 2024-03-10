@@ -125,7 +125,6 @@
       fd
       alacritty
       unzip
-      cmake
     ];
   };
 
