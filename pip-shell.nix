@@ -8,5 +8,8 @@ pkgs.mkShell {
    #python311Packages.jaxlibWithCuda
    python311Packages.flax
    python311Packages.ipython
+   python311Packages.matplotlib
+   python311Packages.plotly
+   python311Packages.pandas
   ];
 }
