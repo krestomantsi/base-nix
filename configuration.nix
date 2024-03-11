@@ -125,12 +125,15 @@
       alacritty
       unzip
       transmission-gtk
+      xournalpp
     ];
   };
 
   # Enable automatic login for the user.
   services.xserver.displayManager.autoLogin.enable = false;
   services.xserver.displayManager.autoLogin.user = "nick";
+  # wacom enable
+  xserver.wacom.enable = true;
 
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
