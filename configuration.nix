@@ -127,6 +127,7 @@
       transmission-gtk
       xournalpp
       vlc
+      roboto-mono
     ];
   };
 
