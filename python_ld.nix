@@ -6,6 +6,8 @@ mkShell {
     zlib
     gcc
     cmake
+    netcdf
+    glib
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
   buildInputs = [ python311 ];
