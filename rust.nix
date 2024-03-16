@@ -3,8 +3,8 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
    cmake
-   cargo 
-   rustc
+   #cargo 
+   #rustc
    python311
    python311Packages.ipython
    python311Packages.matplotlib
