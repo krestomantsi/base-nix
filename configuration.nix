@@ -109,6 +109,8 @@
       emacsNativeComp
       nerdfonts
       texliveFull
+      mupdf
+      poppler
       starship
       neofetch
       thefuck
