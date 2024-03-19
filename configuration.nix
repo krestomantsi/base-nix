@@ -106,7 +106,7 @@
       telegram-desktop
       discord
       fzf
-      emacsNativeComp
+      emacs
       nerdfonts
       texliveFull
       ghostscript
