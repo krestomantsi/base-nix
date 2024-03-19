@@ -109,6 +109,7 @@
       emacsNativeComp
       nerdfonts
       texliveFull
+      ghostscript
       mupdf
       poppler
       starship
