@@ -131,6 +131,7 @@
       xournalpp
       vlc
       roboto-mono
+      typst
     ];
   };
 
