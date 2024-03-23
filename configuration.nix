@@ -132,6 +132,7 @@
       vlc
       roboto-mono
       typst
+      zathura
     ];
   };
 
