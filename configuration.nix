@@ -133,6 +133,7 @@
       roboto-mono
       typst
       zathura
+      joshuto
     ];
   };
 
