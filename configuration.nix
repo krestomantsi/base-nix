@@ -134,6 +134,7 @@
       typst
       zathura
       joshuto
+      vscode
     ];
   };
 
