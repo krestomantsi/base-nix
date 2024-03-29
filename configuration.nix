@@ -49,9 +49,9 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "us";
-    xkbVariant = "";
+    variant = "";
   };
 
   # Enable CUPS to print documents.
@@ -91,6 +91,7 @@
       gnome.gnome-tweaks
       gcc
       firefox
+      microsoft-edge
       neovim 
       helix
       ranger
@@ -134,7 +135,7 @@
       typst
       zathura
       joshuto
-      vscode
+      yazi
     ];
   };
 
