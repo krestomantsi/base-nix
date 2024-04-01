@@ -49,6 +49,15 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
+  # enable hyprland
+  #programs.hyprland.enable = true;
+  #programs.hyprland.xwayland.enable = true;
+
+  #services.xserver.enable = true;
+  #services.xserver.displayManager.sddm.enable = true;
+  # end of hyprland
+
+
   services.xserver.xkb = {
     layout = "us";
     variant = "";
@@ -83,12 +92,12 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      gnome.gnome-boxes
-      gnomeExtensions.dash-to-dock
-      gnomeExtensions.caffeine
-      gnomeExtensions.blur-my-shell
-      gnome-extension-manager
-      gnome.gnome-tweaks
+      #gnome.gnome-boxes
+      #gnomeExtensions.dash-to-dock
+      #gnomeExtensions.caffeine
+      #gnomeExtensions.blur-my-shell
+      #gnome-extension-manager
+      #gnome.gnome-tweaks
       gcc
       firefox
       microsoft-edge
