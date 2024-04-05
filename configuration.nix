@@ -45,36 +45,37 @@
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
-  # services.xserver.enable = true;
-  # services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.desktopManager.gnome.enable = true;
-  # i3 config start
+  services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
-  environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
-  services.xserver = {
-    enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+  # i3 config start
+  # environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
+  # services.xserver = {
+  #   enable = true;
 
-    desktopManager = {
-      xterm.enable = false;
-    };
-   
-    displayManager = {
-        defaultSession = "none+i3";
-    };
+  #   desktopManager = {
+  #     xterm.enable = false;
+  #   };
 
-    services.xserver.windowManager.i3.package = pkgs.i3-gaps;
-    windowManager.i3 = {
-      enable = true;
-      extraPackages = with pkgs; [
-        dmenu #application launcher most people use
-        i3status # gives you the default i3 status bar
-        i3lock #default i3 screen locker
-        i3blocks #if you are planning on using i3blocks over i3status
-        rofi
-        feh
-     ];
-    };
-  };
+  #   displayManager = {
+  #       defaultSession = "none+i3";
+  #   };
+
+  #   windowManager.i3 = {
+  #     enable = true;
+  #     extraPackages = with pkgs; [
+  #       dmenu #application launcher most people use
+  #       i3status # gives you the default i3 status bar
+  #       i3lock #default i3 screen locker
+  #       i3blocks #if you are planning on using i3blocks over i3status
+  #       rofi
+  #       feh
+  #       arandr
+  #    ];
+  #   };
+  # };
+  # services.xserver.windowManager.i3.package = pkgs.i3-gaps;
+  fonts.fonts = with pkgs; [ nerdfonts roboto-mono ];
   # i3 end
 
   services.xserver.xkb = {
