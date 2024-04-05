@@ -45,18 +45,37 @@
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
-  services.xserver.enable = true;
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.desktopManager.gnome.enable = true;
+  # i3 config start
   services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
+  services.xserver = {
+    enable = true;
 
-  # enable hyprland
-  #programs.hyprland.enable = true;
-  #programs.hyprland.xwayland.enable = true;
+    desktopManager = {
+      xterm.enable = false;
+    };
+   
+    displayManager = {
+        defaultSession = "none+i3";
+    };
 
-  #services.xserver.enable = true;
-  #services.xserver.displayManager.sddm.enable = true;
-  # end of hyprland
-
+    services.xserver.windowManager.i3.package = pkgs.i3-gaps;
+    windowManager.i3 = {
+      enable = true;
+      extraPackages = with pkgs; [
+        dmenu #application launcher most people use
+        i3status # gives you the default i3 status bar
+        i3lock #default i3 screen locker
+        i3blocks #if you are planning on using i3blocks over i3status
+        rofi
+        feh
+     ];
+    };
+  };
+  # i3 end
 
   services.xserver.xkb = {
     layout = "us";
@@ -92,12 +111,12 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      #gnome.gnome-boxes
-      #gnomeExtensions.dash-to-dock
-      #gnomeExtensions.caffeine
-      #gnomeExtensions.blur-my-shell
-      #gnome-extension-manager
-      #gnome.gnome-tweaks
+      gnome.gnome-boxes
+      gnomeExtensions.dash-to-dock
+      gnomeExtensions.caffeine
+      gnomeExtensions.blur-my-shell
+      gnome-extension-manager
+      gnome.gnome-tweaks
       gcc
       firefox
       microsoft-edge
@@ -116,7 +135,7 @@
       telegram-desktop
       discord
       fzf
-      emacs
+      emacs-gtk
       nerdfonts
       texliveFull
       ghostscript
@@ -144,7 +163,7 @@
       typst
       zathura
       joshuto
-      yazi
+      docker
     ];
   };
 
