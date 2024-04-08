@@ -51,7 +51,6 @@
   programs.waybar.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-  services.blueman.enable = true;
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
@@ -137,6 +136,7 @@
       blueberry
       grim
       slurp
+      networkmanagerapplet
       #
       gcc
       firefox
