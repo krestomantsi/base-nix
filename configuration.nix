@@ -42,6 +42,11 @@
     LC_TIME = "el_GR.UTF-8";
   };
 
+  # hyprland
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.displayManager.sddm.wayland.enable = true;
+  # programs.hyprland.enable = true;
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
