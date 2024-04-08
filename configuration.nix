@@ -43,16 +43,21 @@
   };
 
   # hyprland
-  # services.xserver.enable = true;
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.displayManager.sddm.wayland.enable = true;
-  # programs.hyprland.enable = true;
+  services.xserver.enable = true;
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.displayManager.sddm.wayland.enable = true;
+  programs.hyprland.enable = true;
+  programs.thunar.enable = true;
+  programs.waybar.enable = true;
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  services.blueman.enable = true;
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.desktopManager.gnome.enable = true;
   # i3 config start
   # environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
   # services.xserver = {
@@ -170,6 +175,11 @@
       zathura
       joshuto
       docker
+      wofi
+      rofi
+      swaybg
+      pavucontrol
+      blueberry
     ];
   };
 
