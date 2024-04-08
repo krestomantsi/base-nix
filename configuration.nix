@@ -122,12 +122,22 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
+      # gnome
       gnome.gnome-boxes
       gnomeExtensions.dash-to-dock
       gnomeExtensions.caffeine
       gnomeExtensions.blur-my-shell
       gnome-extension-manager
       gnome.gnome-tweaks
+      # hyprland
+      wofi
+      rofi
+      swaybg
+      pavucontrol
+      blueberry
+      grim
+      slurp
+      #
       gcc
       firefox
       microsoft-edge
@@ -175,11 +185,6 @@
       zathura
       joshuto
       docker
-      wofi
-      rofi
-      swaybg
-      pavucontrol
-      blueberry
     ];
   };
 
