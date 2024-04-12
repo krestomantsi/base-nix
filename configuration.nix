@@ -137,6 +137,9 @@
       grim
       slurp
       networkmanagerapplet
+      mako
+      loupe
+      wl-clipboard-rs
       #
       gcc
       firefox
