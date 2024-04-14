@@ -159,7 +159,7 @@
       telegram-desktop
       discord
       fzf
-      emacs-gtk
+      emacs
       nerdfonts
       texliveFull
       ghostscript
