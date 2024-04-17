@@ -44,8 +44,8 @@
 
   # hyprland
   services.xserver.enable = true;
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.displayManager.sddm.wayland.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
   programs.hyprland.enable = true;
   programs.thunar.enable = true;
   programs.waybar.enable = true;
@@ -84,7 +84,7 @@
   #   };
   # };
   # services.xserver.windowManager.i3.package = pkgs.i3-gaps;
-  fonts.fonts = with pkgs; [ nerdfonts roboto-mono ];
+  fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
   # i3 end
 
   services.xserver.xkb = {
@@ -143,6 +143,7 @@
       #
       gcc
       firefox
+      time
       microsoft-edge
       neovim 
       helix
@@ -192,8 +193,8 @@
   };
 
   # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = false;
-  services.xserver.displayManager.autoLogin.user = "nick";
+  # services.xserver.displayManager.autoLogin.enable = false;
+  # services.xserver.displayManager.autoLogin.user = "nick";
   # wacom enable
   services.xserver.wacom.enable = true;
 
@@ -209,6 +210,13 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
+  (catppuccin-gtk.override {
+    accents = [ "pink" ]; # You can specify multiple accents here to output multiple themes
+    size = "compact";
+    tweaks = [ "rimless" "black" ]; # You can also specify multiple tweaks here
+    variant = "mocha";
+  })
+  zsh-fzf-history-search
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -242,22 +250,19 @@
   programs.zsh = {
   enable = true;
   enableCompletion = true;
-  enableAutosuggestions = true;
+  autosuggestions.enable = true;
   syntaxHighlighting.enable = true;
 
-  shellAliases = {
-    ll = "ls -l";
-    update = "sudo nixos-rebuild switch";
-  };
   # Your zsh config
   oh-my-zsh = {
     enable = true;
-    plugins = [ "git" "thefuck" ];
+    plugins = [ "git" "thefuck" "zsh-fzf-history-search" ];
     theme = "robbyrussell";
   };
  };
 
  users.defaultUserShell = pkgs.zsh;
+ users.users.nick.shell = pkgs.zsh;
  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
  virtualisation.libvirtd.enable = true;
