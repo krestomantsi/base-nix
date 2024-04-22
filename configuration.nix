@@ -256,7 +256,7 @@
   # Your zsh config
   oh-my-zsh = {
     enable = true;
-    plugins = [ "git" "thefuck" "zsh-fzf-history-search" ];
+    plugins = [ "git" "thefuck" ];
     theme = "robbyrussell";
   };
  };
@@ -322,6 +322,5 @@
 
     patches = [ rcu_patch ];
   };
-
 
 }
