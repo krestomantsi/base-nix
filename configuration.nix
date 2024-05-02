@@ -43,14 +43,14 @@
   };
 
   # hyprland
-  #services.xserver.enable = true;
-  #services.displayManager.sddm.enable = true;
-  #services.displayManager.sddm.wayland.enable = true;
-  #programs.hyprland.enable = true;
-  #programs.thunar.enable = true;
-  #programs.waybar.enable = true;
-  #hardware.bluetooth.enable = true; # enables support for Bluetooth
-  #hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  # services.xserver.enable = true;
+  # services.displayManager.sddm.enable = true;
+  # services.displayManager.sddm.wayland.enable = true;
+  # programs.hyprland.enable = true;
+  # programs.thunar.enable = true;
+  # programs.waybar.enable = true;
+  # hardware.bluetooth.enable = true; # enables support for Bluetooth
+  # hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
@@ -188,6 +188,7 @@
       typst
       zathura
       joshuto
+      yazi
       docker
     ];
   };
@@ -217,6 +218,9 @@
     variant = "mocha";
   })
   zsh-fzf-history-search
+  vscode
+  protonup
+  lutris
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -284,6 +288,12 @@
   remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
   dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
  };
+ programs.steam.gamescopeSession.enable = true;
+ programs.gamemode.enable = true;
+ environment.sessionVariables = {
+  STEAM_EXTRA_COMPAT_TOOLS_PATHS =
+    "\${HOME}/.steam/root/compatibilitytools.d";
+ };
 
  # cuda stuff
  nixpkgs.config.cudaSupport = true;
@@ -322,5 +332,7 @@
 
     patches = [ rcu_patch ];
   };
+
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
 }
