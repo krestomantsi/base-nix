@@ -222,6 +222,7 @@
   protonup
   lutris
   xdg-utils
+  cmake
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -281,6 +282,8 @@
    gcc
    glibc
    zlib
+   cmake
+   gnumake
  ];
 
  # steam stuff
