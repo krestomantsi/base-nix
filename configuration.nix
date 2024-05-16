@@ -129,19 +129,18 @@
       gnome-extension-manager
       gnome.gnome-tweaks
       # hyprland
-      wofi
-      rofi
-      swaybg
-      pavucontrol
-      blueberry
-      grim
-      slurp
-      networkmanagerapplet
-      mako
-      loupe
-      wl-clipboard-rs
+      # wofi
+      # rofi
+      # swaybg
+      # pavucontrol
+      # blueberry
+      # grim
+      # slurp
+      # networkmanagerapplet
+      # mako
+      # loupe
+      # wl-clipboard-rs
       #
-      gcc
       firefox
       time
       microsoft-edge
