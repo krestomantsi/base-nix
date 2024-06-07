@@ -189,6 +189,8 @@
       joshuto
       yazi
       docker
+      poetry
+      gpt4all
     ];
   };
 
