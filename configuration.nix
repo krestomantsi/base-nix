@@ -189,6 +189,7 @@
       joshuto
       yazi
       docker
+      poetry
     ];
   };
 
