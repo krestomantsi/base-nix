@@ -190,6 +190,7 @@
       yazi
       docker
       poetry
+      gpt4all
     ];
   };
 
