@@ -163,6 +163,8 @@
       docker
       poetry
       gpt4all
+      gnuplot
+      nyxt
     ];
   };
 
