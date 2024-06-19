@@ -11,5 +11,7 @@ pkgs.mkShell {
    python311Packages.plotly
    python311Packages.pandas
    python311Packages.seaborn
+   openssl
+   pkg-config
   ];
 }

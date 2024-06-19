@@ -95,11 +95,14 @@
     packages = with pkgs; [
       # gnome
       gnome.gnome-boxes
+      gnome-extension-manager
+      gnome.gnome-tweaks
       gnomeExtensions.dash-to-dock
       gnomeExtensions.caffeine
       gnomeExtensions.blur-my-shell
-      gnome-extension-manager
-      gnome.gnome-tweaks
+      gnomeExtensions.useless-gaps
+      gnomeExtensions.logo-menu
+      gnomeExtensions.rounded-window-corners
       # hyprland
       # wofi
       # rofi
@@ -262,6 +265,7 @@
    zlib
    cmake
    gnumake
+   openssl
  ];
 
  # steam stuff
