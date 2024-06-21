@@ -103,6 +103,7 @@
       gnomeExtensions.useless-gaps
       gnomeExtensions.logo-menu
       gnomeExtensions.rounded-window-corners
+      gnomeExtensions.media-controls
       # hyprland
       # wofi
       # rofi
@@ -167,6 +168,7 @@
       poetry
       gpt4all
       gnuplot
+      tor-browser
     ];
   };
 
