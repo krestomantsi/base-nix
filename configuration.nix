@@ -57,6 +57,7 @@
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  # fonts
   fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
 
   services.xserver.xkb = {
@@ -93,17 +94,17 @@
     description = "nick";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      # gnome
-      gnome.gnome-boxes
-      gnome-extension-manager
-      gnome.gnome-tweaks
-      gnomeExtensions.dash-to-dock
-      gnomeExtensions.caffeine
-      gnomeExtensions.blur-my-shell
-      gnomeExtensions.useless-gaps
-      gnomeExtensions.logo-menu
-      gnomeExtensions.rounded-window-corners
-      gnomeExtensions.media-controls
+    # gnome
+    gnome.gnome-boxes
+    gnome-extension-manager
+    gnome-tweaks
+    gnomeExtensions.dash-to-dock
+    gnomeExtensions.caffeine
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.useless-gaps
+    gnomeExtensions.logo-menu
+    gnomeExtensions.rounded-window-corners
+    gnomeExtensions.media-controls
       # hyprland
       # wofi
       # rofi
@@ -156,7 +157,7 @@
       fd
       alacritty
       unzip
-      transmission-gtk
+      transmission_4-gtk
       xournalpp
       vlc
       roboto-mono
@@ -169,12 +170,10 @@
       gpt4all
       gnuplot
       tor-browser
+      zed-editor
     ];
   };
 
-  # Enable automatic login for the user.
-  # services.xserver.displayManager.autoLogin.enable = false;
-  # services.xserver.displayManager.autoLogin.user = "nick";
   # wacom enable
   services.xserver.wacom.enable = true;
 
@@ -243,7 +242,7 @@
   syntaxHighlighting.enable = true;
 
   # Your zsh config
-  oh-my-zsh = {
+  ohMyZsh = {
     enable = true;
     plugins = [ "git" "thefuck" ];
     theme = "robbyrussell";
@@ -286,10 +285,8 @@
  # cuda stuff
  nixpkgs.config.cudaSupport = true;
  services.xserver.videoDrivers = ["nvidia"];
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
   };
 
   hardware.nvidia.modesetting.enable = true;
@@ -299,5 +296,4 @@
   hardware.nvidia.nvidiaSettings = true;
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
-
 }
