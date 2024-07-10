@@ -122,7 +122,6 @@
       time
       microsoft-edge
       neovim 
-      helix
       ranger
       git
       rust-analyzer
@@ -130,21 +129,17 @@
       julia-bin
       htop
       kitty
-      zellij
       zoxide
       eza
       telegram-desktop
       discord
       fzf
       emacs
-      nerdfonts
       texliveFull
       ghostscript
       mupdf
       poppler
       starship
-      neofetch
-      thefuck
       lazygit
       libvirt
       libreoffice
@@ -160,17 +155,15 @@
       transmission_4-gtk
       xournalpp
       vlc
-      roboto-mono
       typst
       zathura
       joshuto
-      yazi
       docker
       poetry
-      gpt4all
       gnuplot
       tor-browser
       zed-editor
+      pandoc
     ];
   };
 
@@ -244,7 +237,7 @@
   # Your zsh config
   ohMyZsh = {
     enable = true;
-    plugins = [ "git" "thefuck" ];
+    plugins = [ "git" ];
     theme = "robbyrussell";
   };
  };
