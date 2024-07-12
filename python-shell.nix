@@ -12,5 +12,6 @@ pkgs.mkShell {
    python311Packages.plotly
    python311Packages.pandas
    python311Packages.seaborn
+   python311Packages.tqdm
   ];
 }

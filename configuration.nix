@@ -121,7 +121,7 @@
       firefox
       time
       microsoft-edge
-      neovim 
+      neovim
       ranger
       git
       rust-analyzer
@@ -152,7 +152,7 @@
       fd
       alacritty
       unzip
-      transmission_4-gtk
+      # transmission_4-gtk
       xournalpp
       vlc
       typst
@@ -227,7 +227,7 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
 
-  # zsh 
+  # zsh
   programs.zsh = {
   enable = true;
   enableCompletion = true;
@@ -289,4 +289,13 @@
   hardware.nvidia.nvidiaSettings = true;
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  nix.settings = {
+    substituters = [
+      "https://cuda-maintainers.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+    ];
+  };
 }
