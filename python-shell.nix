@@ -4,8 +4,8 @@ pkgs.mkShell {
    cudatoolkit
    python311
    python311Packages.jax
-   python311Packages.jaxlib-bin
-   #python311Packages.jaxlibWithCuda
+   #python311Packages.jaxlib-bin
+   python311Packages.jaxlibWithCuda
    python311Packages.flax
    python311Packages.ipython
    python311Packages.matplotlib
