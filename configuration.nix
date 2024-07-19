@@ -152,7 +152,7 @@
       fd
       alacritty
       unzip
-      # transmission_4-gtk
+      transmission-gtk
       xournalpp
       vlc
       typst
