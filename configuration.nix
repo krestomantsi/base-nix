@@ -188,7 +188,7 @@
   zsh-fzf-history-search
   vscode
   protonup
-  lutris
+  #lutris
   xdg-utils
   cmake
   gnumake
