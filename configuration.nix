@@ -101,10 +101,7 @@
     gnomeExtensions.dash-to-dock
     gnomeExtensions.caffeine
     gnomeExtensions.blur-my-shell
-    gnomeExtensions.useless-gaps
     gnomeExtensions.logo-menu
-    gnomeExtensions.rounded-window-corners
-    gnomeExtensions.media-controls
       # hyprland
       # wofi
       # rofi
