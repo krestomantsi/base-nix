@@ -160,6 +160,7 @@
       joshuto
       yazi
       nushell
+      bacon
       docker
       poetry
       gnuplot
