@@ -43,20 +43,23 @@
   };
 
   # hyprland
-  # services.xserver.enable = true;
-  # services.displayManager.sddm.enable = true;
-  # services.displayManager.sddm.wayland.enable = true;
-  # programs.hyprland.enable = true;
-  # programs.thunar.enable = true;
-  # programs.waybar.enable = true;
-  # hardware.bluetooth.enable = true; # enables support for Bluetooth
-  # hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  services.xserver.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
+  programs.hyprland.enable = true;
+  programs.thunar.enable = true;
+  programs.waybar.enable = true;
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.desktopManager.gnome.enable = true;
+  # cosmic
+  # services.desktopManager.cosmic.enable = true;
+  # services.displayManager.cosmic-greeter.enable = true;
   # fonts
   fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
 
@@ -95,25 +98,25 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     # gnome
-    gnome.gnome-boxes
-    gnome-extension-manager
-    gnome-tweaks
-    gnomeExtensions.dash-to-dock
-    gnomeExtensions.caffeine
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.logo-menu
+    # gnome.gnome-boxes
+    # gnome-extension-manager
+    # gnome-tweaks
+    # gnomeExtensions.dash-to-dock
+    # gnomeExtensions.caffeine
+    # gnomeExtensions.blur-my-shell
+    # gnomeExtensions.logo-menu
       # hyprland
-      # wofi
-      # rofi
-      # swaybg
-      # pavucontrol
-      # blueberry
-      # grim
-      # slurp
-      # networkmanagerapplet
-      # mako
-      # loupe
-      # wl-clipboard-rs
+      wofi
+      rofi
+      swaybg
+      pavucontrol
+      blueberry
+      grim
+      slurp
+      networkmanagerapplet
+      mako
+      loupe
+      wl-clipboard-rs
       #
       firefox-bin
       time
@@ -298,10 +301,5 @@
 
 
  programs.steam.protontricks.enable = true;
-
- # trying to fix firefox
- environment.variables = {
-    MOZ_ENABLE_WAYLAND = 0;
- };
 
 }
