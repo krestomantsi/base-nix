@@ -167,6 +167,8 @@
       tor-browser
       zed-editor
       pandoc
+      cargo-sweep
+      cargo-wizard
     ];
   };
 
@@ -185,12 +187,6 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
-  (catppuccin-gtk.override {
-    accents = [ "pink" ]; # You can specify multiple accents here to output multiple themes
-    size = "compact";
-    tweaks = [ "rimless" "black" ]; # You can also specify multiple tweaks here
-    variant = "mocha";
-  })
   zsh-fzf-history-search
   vscode
   protonup
