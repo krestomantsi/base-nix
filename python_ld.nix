@@ -10,7 +10,7 @@ mkShell {
     glib
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
-  buildInputs = [ python312 ];
+  buildInputs = [ python311 ];
   shellHook = ''
     export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
   '';

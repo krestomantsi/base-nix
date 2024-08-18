@@ -115,7 +115,7 @@
       # loupe
       # wl-clipboard-rs
       #
-      firefox
+      firefox-bin
       time
       microsoft-edge
       neovim
@@ -188,7 +188,7 @@
   zsh-fzf-history-search
   vscode
   protonup
-  #lutris
+  lutris
   xdg-utils
   cmake
   gnumake
@@ -295,4 +295,13 @@
       "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
+
+
+ programs.steam.protontricks.enable = true;
+
+ # trying to fix firefox
+ environment.variables = {
+    MOZ_ENABLE_WAYLAND = 0;
+ };
+
 }

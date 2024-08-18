@@ -3,7 +3,7 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
    cmake
-   #cargo 
+   #cargo
    #rustc
    python311
    python311Packages.ipython
@@ -12,6 +12,7 @@ pkgs.mkShell {
    python311Packages.pandas
    python311Packages.seaborn
    python311Packages.numpy
+   python311Packages.scipy
    openssl
    pkg-config
   ];
