@@ -158,6 +158,8 @@
       typst
       zathura
       joshuto
+      yazi
+      nushell
       docker
       poetry
       gnuplot
