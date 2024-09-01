@@ -169,6 +169,7 @@
       pandoc
       cargo-sweep
       cargo-wizard
+      gpt4all-cuda
     ];
   };
 
@@ -301,4 +302,16 @@
 
  programs.steam.protontricks.enable = true;
 
+nixpkgs.overlays = [
+(self: super: {
+    gpt4all-cuda = super.gpt4all-cuda.overrideAttrs (oldAttrs: rec {
+    postInstall =
+        ''
+        wrapProgram $out/bin/chat \
+            --set LD_LIBRARY_PATH "/run/opengl-driver/lib"
+        ''
+        + (oldAttrs.postInstall or "");
+    });
+})
+];
 }
