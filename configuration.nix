@@ -98,7 +98,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     # gnome
-    gnome.gnome-boxes
+    gnome-boxes
     gnome-extension-manager
     gnome-tweaks
     gnomeExtensions.dash-to-dock
