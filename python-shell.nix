@@ -14,5 +14,6 @@ pkgs.mkShell {
    python311Packages.seaborn
    python311Packages.tqdm
    python311Packages.scikitlearn
+   python311Packages.openpyxl
   ];
 }
