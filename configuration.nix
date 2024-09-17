@@ -125,7 +125,9 @@
       ranger
       git
       rust-analyzer
-      rustup
+      #rustup
+      cargo
+      rustc
       julia-bin
       htop
       kitty
@@ -169,6 +171,7 @@
       pandoc
       cargo-sweep
       cargo-wizard
+      zellij
       #gpt4all-cuda
     ];
   };
