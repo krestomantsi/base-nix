@@ -128,6 +128,7 @@
       #rustup
       cargo
       rustc
+      rustfmt
       julia-bin
       htop
       kitty
@@ -172,6 +173,13 @@
       cargo-sweep
       cargo-wizard
       zellij
+      # emacs everywhere
+      xclip
+      #xdotool
+      ydotool
+      xorg.xprop
+      xorg.xwininfo
+      #wl-copy
       #gpt4all-cuda
     ];
   };
@@ -305,6 +313,11 @@
 
  programs.steam.protontricks.enable = true;
 
+ # emacs daemon
+ services.emacs = {
+    enable = true;
+    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
+  };
 # gpt4all-cuda overlay
 # nixpkgs.overlays = [
 # (self: super: {
