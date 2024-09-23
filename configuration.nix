@@ -57,9 +57,6 @@
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  #cosmic
-  # services.desktopManager.cosmic.enable = true;
-  # services.displayManager.cosmic-greeter.enable = true;
   # fonts
   fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
 
@@ -173,13 +170,6 @@
       cargo-sweep
       cargo-wizard
       zellij
-      # emacs everywhere
-      xclip
-      #xdotool
-      ydotool
-      xorg.xprop
-      xorg.xwininfo
-      #wl-copy
       #gpt4all-cuda
     ];
   };
