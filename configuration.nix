@@ -245,7 +245,7 @@
 
  users.defaultUserShell = pkgs.nushell;
  users.users.nick.shell = pkgs.nushell;
- programs.zoxide.enableNushellIntegration = true;
+ #programs.zoxide.enableNushellIntegration = true;
  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
  virtualisation.libvirtd.enable = true;
