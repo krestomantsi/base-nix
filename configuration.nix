@@ -243,8 +243,9 @@
   };
  };
 
- users.defaultUserShell = pkgs.zsh;
- users.users.nick.shell = pkgs.zsh;
+ users.defaultUserShell = pkgs.nushell;
+ users.users.nick.shell = pkgs.nushell;
+ programs.zoxide.enableNushellIntegration = true;
  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
  virtualisation.libvirtd.enable = true;
