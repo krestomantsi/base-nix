@@ -95,7 +95,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     # gnome
-    gnome-boxes
+    #gnome-boxes
     gnome-extension-manager
     gnome-tweaks
     gnomeExtensions.dash-to-dock
@@ -113,7 +113,7 @@
       # networkmanagerapplet
       # mako
       # loupe
-      # wl-clipboard-rs
+      # wl-clipboard
       #
       firefox-bin
       time
@@ -122,7 +122,6 @@
       ranger
       git
       rust-analyzer
-      #rustup
       cargo
       rustc
       rustfmt
@@ -170,6 +169,7 @@
       cargo-sweep
       cargo-wizard
       zellij
+      wl-clipboard
       #gpt4all-cuda
     ];
   };
