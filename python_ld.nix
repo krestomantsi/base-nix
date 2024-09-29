@@ -10,8 +10,8 @@ mkShell {
     glib
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
-  buildInputs = [ python311python311Packages
-        python311Packages.poetry ];
+  buildInputs = [ python311
+                  python311Packages.poetry ];
   shellHook = ''
     export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
   '';
