@@ -161,7 +161,6 @@
       nushell
       bacon
       docker
-      poetry
       gnuplot
       tor-browser
       zed-editor
