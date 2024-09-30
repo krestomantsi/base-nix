@@ -15,5 +15,8 @@ pkgs.mkShell {
    python311Packages.scipy
    openssl
    pkg-config
+   loco-cli
+   sea-orm-cli
+   sqlite
   ];
 }

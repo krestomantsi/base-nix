@@ -170,6 +170,7 @@
       cargo-wizard
       zellij
       wl-clipboard
+      helix
       #gpt4all-cuda
     ];
   };
