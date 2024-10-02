@@ -171,6 +171,7 @@
       zellij
       wl-clipboard
       helix
+      unixtools.watch
       #gpt4all-cuda
     ];
   };
@@ -306,10 +307,11 @@
  programs.steam.protontricks.enable = true;
 
  # emacs daemon
- services.emacs = {
-    enable = true;
-    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
-  };
+ # services.emacs = {
+ #    enable = true;
+ #    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
+ #  };
+    
 # gpt4all-cuda overlay
 # nixpkgs.overlays = [
 # (self: super: {
