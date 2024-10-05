@@ -305,6 +305,14 @@
 
 
  programs.steam.protontricks.enable = true;
+ # auto gc
+ nix.gc = {
+ automatic = true;
+ dates = "weekly";
+ options = "--delete-older-than 15d";
+ };
+# auto optimise nix store
+nix.settings.auto-optimise-store = true;
 
  # emacs daemon
  # services.emacs = {
