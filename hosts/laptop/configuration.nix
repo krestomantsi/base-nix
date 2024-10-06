@@ -23,13 +23,11 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  # power management
+  powerManagement.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Athens";
-
-  # power management stuff
-  powerManagement.enable = true;
-  cpufreq.enable = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -294,7 +292,7 @@
 
   hardware.nvidia.modesetting.enable = true;
   hardware.nvidia.powerManagement.enable = true;
-  hardware.nvidia.powerManagement.finegrained = true;
+  hardware.nvidia.powerManagement.finegrained = false;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
 
