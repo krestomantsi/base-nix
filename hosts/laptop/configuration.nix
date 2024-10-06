@@ -27,6 +27,10 @@
   # Set your time zone.
   time.timeZone = "Europe/Athens";
 
+  # power management stuff
+  powerManagement.enable = true;
+  cpufreq.enable = true;
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -173,6 +177,7 @@
       helix
       unixtools.watch
       bat
+      powertop
       #gpt4all-cuda
     ];
   };
@@ -288,8 +293,8 @@
   };
 
   hardware.nvidia.modesetting.enable = true;
-  hardware.nvidia.powerManagement.enable = false;
-  hardware.nvidia.powerManagement.finegrained = false;
+  hardware.nvidia.powerManagement.enable = true;
+  hardware.nvidia.powerManagement.finegrained = true;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
 
