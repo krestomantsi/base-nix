@@ -23,8 +23,6 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  # power management
-  powerManagement.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Athens";
@@ -135,7 +133,6 @@
       telegram-desktop
       discord
       fzf
-      texliveFull
       starship
       lazygit
       libvirt
@@ -151,7 +148,6 @@
       typst
       zathura
       joshuto
-      yazi
       nushell
       bacon
       docker
@@ -163,20 +159,20 @@
       zellij
       wl-clipboard
       helix
-      unixtools.watch
+      yazi
+      texliveFull
       bat
-      powertop
-      # pandoc
-      # gnuplot
       # emacs
       # ghostscript
       # mupdf
       # poppler
+      # pandoc
+      # gpt4all-cuda
       # engauge-digitizer
       # tmux
       # gfortran
       # fortran-fpm
-      #gpt4all-cuda
+      # gnuplot
     ];
   };
 
@@ -282,6 +278,7 @@
   STEAM_EXTRA_COMPAT_TOOLS_PATHS =
     "\${HOME}/.steam/root/compatibilitytools.d";
  };
+ programs.steam.protontricks.enable = true;
 
  # cuda stuff
  nixpkgs.config.cudaSupport = true;
@@ -291,7 +288,7 @@
   };
 
   hardware.nvidia.modesetting.enable = true;
-  hardware.nvidia.powerManagement.enable = true;
+  hardware.nvidia.powerManagement.enable = false;
   hardware.nvidia.powerManagement.finegrained = false;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
@@ -308,15 +305,14 @@
   };
 
 
- programs.steam.protontricks.enable = true;
  # auto gc
  nix.gc = {
  automatic = true;
  dates = "weekly";
  options = "--delete-older-than 15d";
  };
-# auto optimise nix store
-nix.settings.auto-optimise-store = true;
+ # auto optimise nix store
+ nix.settings.auto-optimise-store = true;
 
  # emacs daemon
  # services.emacs = {
