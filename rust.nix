@@ -3,8 +3,8 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
    openblas
-   cmake
    gfortran
+   cmake
    python311
    python311Packages.ipython
    python311Packages.matplotlib
