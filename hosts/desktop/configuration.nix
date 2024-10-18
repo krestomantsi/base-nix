@@ -43,22 +43,64 @@
   };
 
   # hyprland
-  # services.xserver.enable = true;
-  # services.displayManager.sddm.enable = true;
-  # services.displayManager.sddm.wayland.enable = true;
-  # programs.hyprland.enable = true;
-  # programs.thunar.enable = true;
-  # programs.waybar.enable = true;
-  # hardware.bluetooth.enable = true; # enables support for Bluetooth
-  # hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  services.xserver.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
+  programs.hyprland.enable = true;
+  programs.thunar.enable = true;
+  programs.waybar.enable = true;
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   # Enable the X11 windowing system.
   # Enable the GNOME Desktop Environment.
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.desktopManager.gnome.enable = true;
   # fonts
   fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
+  # i3
+  #  services.xserver = {
+  #  enable = true;
+  #
+  #  desktopManager = {
+  #    xterm.enable = false;
+  #  };
+  #
+  #  displayManager = {
+  #      defaultSession = "none+i3";
+  #  };
+  #
+  #  windowManager.i3 = {
+  #    enable = true;
+  #    extraPackages = with pkgs; [
+  #      dmenu #application launcher most people use
+  #      rofi
+  #      i3status # gives you the default i3 status bar
+  #      i3lock #default i3 screen locker
+  #      i3blocks #if you are planning on using i3blocks over i3status
+  #      feh
+  #   ];
+  #  };
+  # };
+  # services.picom = {
+  #       enable = true;
+  #       fade = true;
+  #       #    vSync = true;
+  #       shadow = true;
+  #       fadeDelta = 4 ;
+  #       inactiveOpacity = 0.8;
+  #       activeOpacity = 1;
+  #       #    backend = "glx";
+  #       settings = {
+  #       blur = {
+  #       #method = "dual_kawase";
+  #       #	background = true;
+  #       strength = 5;
+  #       };
+  #       };
+  # };
+  #i3end
 
   services.xserver.xkb = {
     layout = "us";
@@ -95,25 +137,26 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     # gnome
-    gnome-boxes
-    gnome-extension-manager
-    gnome-tweaks
-    gnomeExtensions.dash-to-dock
-    gnomeExtensions.caffeine
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.logo-menu
+    # gnome-boxes
+    # gnome-extension-manager
+    # gnome-tweaks
+    # gnomeExtensions.dash-to-dock
+    # gnomeExtensions.caffeine
+    # gnomeExtensions.blur-my-shell
+    # gnomeExtensions.logo-menu
       # hyprland
-      # wofi
-      # rofi
-      # swaybg
-      # pavucontrol
-      # blueberry
-      # grim
-      # slurp
-      # networkmanagerapplet
-      # mako
-      # loupe
-      # wl-clipboard
+      dunst
+      wofi
+      rofi
+      swaybg
+      pavucontrol
+      blueberry
+      grim
+      slurp
+      networkmanagerapplet
+      #mako
+      loupe
+      wl-clipboard
       #
       firefox-bin
       time
@@ -162,6 +205,7 @@
       yazi
       texliveFull
       bat
+      python312
       # emacs
       # ghostscript
       # mupdf
@@ -305,7 +349,10 @@
     ];
   };
 
-
+ virtualisation.podman = {
+   enable = true;
+   dockerCompat = true;
+ };
  # auto gc
  nix.gc = {
  automatic = true;

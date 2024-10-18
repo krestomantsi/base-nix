@@ -2,6 +2,7 @@
 { pkgs ? import <nixpkgs> { } }:
 pkgs.mkShell {
   buildInputs = with pkgs; [
+   openblas
    gfortran
    cmake
    python312
