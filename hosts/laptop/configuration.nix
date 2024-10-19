@@ -50,6 +50,7 @@
   services.displayManager.sddm.wayland.enable = true;
   programs.hyprland.enable = true;
   programs.thunar.enable = true;
+  services.gvfs.enable = true;
   programs.waybar.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot

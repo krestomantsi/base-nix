@@ -48,6 +48,7 @@
   services.displayManager.sddm.wayland.enable = true;
   programs.hyprland.enable = true;
   programs.thunar.enable = true;
+  services.gvfs.enable = true;
   programs.waybar.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
@@ -338,7 +339,7 @@
   hardware.nvidia.powerManagement.finegrained = false;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
-  hardware.nvidia-container-toolkit.enable = true
+  hardware.nvidia-container-toolkit.enable = true;
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
