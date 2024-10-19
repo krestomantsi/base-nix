@@ -1,19 +1,19 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import <nixpkgs> { config = { allowUnfree = true; }; } }:
 pkgs.mkShell {
   buildInputs = with pkgs; [
-   cudatoolkit
-   python312
-   python312Packages.jax
-   #python321Packages.jaxlib-bin
-   python312Packages.jaxlibWithCuda
-   python312Packages.flax
-   python312Packages.ipython
-   python312Packages.matplotlib
-   python312Packages.plotly
-   python312Packages.pandas
-   python312Packages.seaborn
-   python312Packages.tqdm
-   python312Packages.scikitlearn
-   python312Packages.openpyxl
+    cudatoolkit
+    python311
+    python311Packages.jax
+    #python311Packages.jaxlib-bin
+    python311Packages.jaxlibWithCuda
+    python311Packages.flax
+    python311Packages.ipython
+    python311Packages.matplotlib
+    # python311Packages.plotly
+    python311Packages.pandas
+    python311Packages.seaborn
+    python311Packages.tqdm
+    python311Packages.scikitlearn
+    python311Packages.openpyxl
   ];
 }
