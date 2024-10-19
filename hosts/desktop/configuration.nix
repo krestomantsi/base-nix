@@ -158,6 +158,7 @@
       loupe
       wl-clipboard
       #
+      distrobox
       firefox-bin
       time
       microsoft-edge
@@ -168,7 +169,7 @@
       cargo
       rustc
       rustfmt
-      julia-bin
+      #julia-bin
       htop
       kitty
       zoxide
@@ -337,6 +338,7 @@
   hardware.nvidia.powerManagement.finegrained = false;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
+  hardware.nvidia-container-toolkit.enable = true
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
