@@ -170,7 +170,7 @@
       cargo
       rustc
       rustfmt
-      #julia-bin
+      julia-bin
       htop
       kitty
       zoxide

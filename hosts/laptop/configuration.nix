@@ -129,7 +129,7 @@
       cargo
       rustc
       rustfmt
-      julia-bin
+      #julia-bin
       htop
       kitty
       zoxide
@@ -273,17 +273,18 @@
  ];
 
  # steam stuff
- programs.steam = {
-  enable = true;
-  remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-  dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
- };
- programs.steam.gamescopeSession.enable = true;
- programs.gamemode.enable = true;
- environment.sessionVariables = {
-  STEAM_EXTRA_COMPAT_TOOLS_PATHS =
-    "\${HOME}/.steam/root/compatibilitytools.d";
- };
+ # programs.steam = {
+ #  enable = true;
+ #  remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+ #  dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+ # };
+ # programs.steam.gamescopeSession.enable = true;
+ # programs.gamemode.enable = true;
+ # environment.sessionVariables = {
+ #  STEAM_EXTRA_COMPAT_TOOLS_PATHS =
+ #    "\${HOME}/.steam/root/compatibilitytools.d";
+ # };
+ # programs.steam.protontricks.enable = true;
 
  # cuda stuff
  nixpkgs.config.cudaSupport = true;
@@ -310,7 +311,6 @@
   };
 
 
- programs.steam.protontricks.enable = true;
  # auto gc
  nix.gc = {
  automatic = true;
@@ -320,11 +320,6 @@
 # auto optimise nix store
 nix.settings.auto-optimise-store = true;
 
- # emacs daemon
- # services.emacs = {
- #    enable = true;
- #    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
- #  };
     
 # gpt4all-cuda overlay
 # nixpkgs.overlays = [
