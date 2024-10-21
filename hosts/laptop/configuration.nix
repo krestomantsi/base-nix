@@ -114,10 +114,9 @@
       # grim
       # slurp
       # networkmanagerapplet
-            #mako
-      dunst
-      loupe
-      wl-clipboard
+      # dunst
+      # loupe
+      # wl-clipboard
       #
       firefox-bin
       time

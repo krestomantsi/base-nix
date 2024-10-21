@@ -155,9 +155,8 @@
       # grim
       # slurp
       # networkmanagerapplet
-      #mako
-      loupe
-      wl-clipboard
+      # loupe
+      # wl-clipboard
       #
       distrobox
       firefox-bin
