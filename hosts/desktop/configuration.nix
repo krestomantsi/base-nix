@@ -203,7 +203,7 @@
       zellij
       wl-clipboard
       helix
-      yazi
+      #yazi
       texliveFull
       bat
       python312
