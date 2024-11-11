@@ -166,13 +166,14 @@
       tor-browser
       zed-editor
       pandoc
-      cargo-sweep
+      # cargo-sweep
       cargo-wizard
       zellij
       wl-clipboard
       helix
       unixtools.watch
       #gpt4all-cuda
+      yt-dlg
     ];
   };
 

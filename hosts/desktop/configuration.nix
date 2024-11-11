@@ -198,7 +198,7 @@
       poetry
       tor-browser
       zed-editor
-      cargo-sweep
+      # cargo-sweep
       cargo-wizard
       zellij
       wl-clipboard
@@ -218,6 +218,7 @@
       # gfortran
       # fortran-fpm
       # gnuplot
+      yt-dlg
     ];
   };
 
