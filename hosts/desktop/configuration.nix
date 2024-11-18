@@ -166,9 +166,9 @@
       ranger
       git
       rust-analyzer
-      cargo
-      rustc
-      rustfmt
+      # cargo
+      # rustc
+      # rustfmt
       julia-bin
       htop
       kitty
@@ -201,12 +201,14 @@
       # cargo-sweep
       cargo-wizard
       zellij
+      tmux
       wl-clipboard
       helix
       #yazi
       texliveFull
       bat
       python312
+      droidcam
       # emacs
       # ghostscript
       # mupdf
@@ -219,6 +221,7 @@
       # fortran-fpm
       # gnuplot
       yt-dlg
+      uv
     ];
   };
 
@@ -239,7 +242,7 @@
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   zsh-fzf-history-search
-  vscode
+  vscode-fhs
   protonup
   lutris
   xdg-utils
@@ -247,7 +250,10 @@
   gnumake
   libvterm
   libtool
-  openssl
+  openssl.dev
+  rustup
+  zlib
+  pkg-config
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
