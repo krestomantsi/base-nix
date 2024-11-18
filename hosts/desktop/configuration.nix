@@ -208,7 +208,6 @@
       texliveFull
       bat
       python312
-      droidcam
       # emacs
       # ghostscript
       # mupdf
@@ -390,5 +389,4 @@
 #     });
 # })
 # ];
-
 }
