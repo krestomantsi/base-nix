@@ -125,10 +125,10 @@
       ranger
       git
       rust-analyzer
-      cargo
-      rustc
-      rustfmt
-      #julia-bin
+      # cargo
+      # rustc
+      # rustfmt
+      julia-bin
       htop
       kitty
       zoxide
@@ -152,16 +152,17 @@
       typst
       zathura
       joshuto
-      yazi
+      # yazi
       nushell
       bacon
       docker
       poetry
       tor-browser
       zed-editor
-      cargo-sweep
+      # cargo-sweep
       cargo-wizard
       zellij
+      tmux
       wl-clipboard
       helix
       unixtools.watch
@@ -206,6 +207,7 @@
   libvterm
   libtool
   openssl
+  rustup
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -2,8 +2,8 @@
 { pkgs ? import <nixpkgs> { } }:
 pkgs.mkShell {
   buildInputs = with pkgs; [
-   openblas
-   gfortran
+  #  openblas
+  #  gfortran
    cmake
    python312
    python312Packages.ipython
@@ -15,8 +15,8 @@ pkgs.mkShell {
    python312Packages.scipy
    openssl
    pkg-config
-   loco-cli
-   sea-orm-cli
-   sqlite
+  #  loco-cli
+  #  sea-orm-cli
+  #  sqlite
   ];
 }
