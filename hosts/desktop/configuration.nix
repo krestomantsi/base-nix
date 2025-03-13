@@ -59,7 +59,7 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
   # fonts
-  fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
+  fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono ];
   # i3
   #  services.xserver = {
   #  enable = true;
@@ -113,7 +113,7 @@
 
   # Enable sound with pipewire.
   #sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
