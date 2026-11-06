@@ -11,9 +11,10 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # GNOME Boxes/QEMU guest integration (clipboard, shared folders, USB).
-      # Drop this line once the Framework is installed on real hardware.
-      ./vm.nix
+      # NOTE: ./vm.nix (GNOME Boxes/QEMU clipboard, shared folders, USB) is
+      # intentionally *not* imported now that this runs on bare metal. Add the
+      # line back if you boot this config in a VM:
+      #   ./vm.nix
     ];
 
   # --------------------------------------------------------------- boot -----
@@ -130,6 +131,8 @@
       time
       microsoft-edge
       neovim
+      # nvim-treesitter needs the CLI to compile parsers; nvim itself is above.
+      tree-sitter
       ranger
       git
       julia-bin
@@ -200,11 +203,27 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # NixOS defaults this to [ "man" "info" "doc" ]. With this nixpkgs pin the
+  # python3.12 *doc* output does not build (sphinx 8 vs docutils 0.22 TypeError)
+  # and is not in cache.nixos.org, which fails the whole system build. Keep
+  # man/info pages, skip the doc outputs.
+  environment.extraOutputsToInstall = lib.mkForce [ "man" "info" ];
+
   # ------------------------------------------------------- system packages --
   environment.systemPackages = with pkgs; [
     vim
     zsh-fzf-history-search
-    vscode
+    # vscode 1.144 ships its bundled ripgrep at
+    # node_modules.asar.unpacked/@vscode/ripgrep-universal/, but the nixpkgs
+    # expression still rm/chmod's .../node_modules/@vscode/ripgrep/bin/rg and
+    # fails (nothing in cache). Pre-create the path so the package's own
+    # `rm` + `ln -s ${ripgrep}/bin/rg` succeeds.
+    (vscode.overrideAttrs (old: {
+      prePatch = (old.prePatch or "") + ''
+        mkdir -p resources/app/node_modules/@vscode/ripgrep/bin
+        touch resources/app/node_modules/@vscode/ripgrep/bin/rg
+      '';
+    }))
     protonup-ng
     lutris
     xdg-utils
@@ -224,7 +243,8 @@
   # --------------------------------------------------------- state version --
   # This value determines the NixOS release from which the default settings for
   # stateful data were taken. Leave it at the release of the first install.
-  system.stateVersion = "24.11";
+  # 26.05 = current nixos-unstable, which is what the install ISO/README use.
+  system.stateVersion = "26.05";
 
   # --------------------------------------------------------------- shell ----
   programs.zsh = {
@@ -275,7 +295,24 @@
     fontconfig
     freetype
     harfbuzz
+    # More of what herdr-app / electron-ish prebuilt GUIs dlopen: X11 key and
+    # window-management helpers, audio, notifications, DRM/GBM.
+    libxcb-keysyms
+    libxcb-wm
+    alsa-lib
+    libpulseaudio
+    libnotify
+    libdrm
+    libgbm
   ];
+
+  # herdr-app (multiplexer) + nvim as the editor: make every tool that shells
+  # out pick nvim, including git commit messages and $EDITOR users.
+  environment.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    GIT_EDITOR = "nvim";
+  };
 
   # ------------------------------------------------------------- gaming -----
   programs.steam = {

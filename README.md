@@ -15,7 +15,7 @@ my nix dotfiles (WIP)
 
 | | Command | Needs |
 |---|---|---|
-| **No flakes** (default below) | `sudo nixos-rebuild switch -f hosts/framework/default.nix` or `./hosts/framework/rebuild.sh` | a `nixos-unstable` channel (or `hosts/framework/nixpkgs.nix` pin) |
+| **No flakes** (default below) | `sudo ~/base-nix/hosts/framework/rebuild.sh` or `sudo nixos-rebuild switch -f hosts/framework/default.nix -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos` | a `nixos-unstable` channel (or `hosts/framework/nixpkgs.nix` pin) |
 | Flakes | `sudo nixos-rebuild switch --flake .#framework` | `nix-command flakes` |
 
 The host module itself (`hosts/framework/configuration.nix`) is identical for
@@ -29,8 +29,10 @@ so it wants a *module* → `configuration.nix`.
 ### Non-flake files
 
 - `hosts/framework/default.nix` — the `-f` entry point (system expression wrapping `configuration.nix`).
-- `hosts/framework/rebuild.sh` — `switch` / `boot` / `--install`, picks up the pin automatically.
+- `hosts/framework/bootloader-bios.nix` — imported by `default.nix` **only when `/sys/firmware/efi` is missing**; a BIOS install (e.g. the QEMU/Boxes test VM) keeps GRUB on `/dev/vda` instead of trying systemd-boot. Real UEFI hardware is unaffected and gets systemd-boot.
+- `hosts/framework/rebuild.sh` — `switch` / `boot` / `--install`, picks up the pin automatically and passes `-I nixpkgs=<root channel>` because `sudo` drops `NIX_PATH`.
 - `hosts/framework/nixpkgs.nix.example` — optional tarball pin; rename to `nixpkgs.nix` after filling in rev + sha256.
+- `shells/dev/shell.nix` — **one dev shell with Odin (`odin` + `ols`), Rust (`rustup`) and Python (`uv`)**, plus `nvim`/`tree-sitter`/`ripgrep`/`fd` for the herdr-app + nvim workflow.
 - `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — non-flake dev shells, copy/symlink into the repos.
 
 ```sh
@@ -38,12 +40,14 @@ so it wants a *module* → `configuration.nix`.
 sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
 sudo nix-channel --update
 
-# rebuild
-sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix
-# or
-~/base-nix/hosts/framework/rebuild.sh
+# rebuild (run as root; rebuild.sh adds -I nixpkgs=<root channel> for you)
+sudo ~/base-nix/hosts/framework/rebuild.sh
+# or by hand
+sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
+  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
 
 # dev shells
+nix-shell ~/base-nix/shells/dev/shell.nix        # odin + ols + rustup + uv + nvim
 cp ~/base-nix/shells/rust_repo/shell.nix ~/rust_repo/
 cp ~/base-nix/shells/yggdrasil/shell.nix ~/yggdrasil/
 cd ~/rust_repo && nix-shell
@@ -158,8 +162,9 @@ After the first boot, confirm with `nix config show experimental-features`
 
 ```sh
 # non-flake
-sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix
-# or: ~/base-nix/hosts/framework/rebuild.sh
+sudo ~/base-nix/hosts/framework/rebuild.sh
+# or: sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
+#       -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
 
 passwd                       # set nick's password
 fwupdmgr get-devices         # Framework BIOS/EC firmware updates via LVFS
@@ -184,6 +189,34 @@ bluetoothctl show
 
 ## Notes
 
+- **Bare metal:** `hosts/framework/configuration.nix` no longer imports
+  `vm.nix`, so no SPICE/QEMU guest services are enabled. Add `./vm.nix` back to
+  `imports` if you boot this host in GNOME Boxes/QEMU.
+- **Replace `hosts/framework/hardware-configuration.nix`** with the output of
+  `nixos-generate-config` from the real machine (step 4). The tracked file is a
+  template with placeholder UUIDs (an ESP on `/boot`, NVMe, AMD microcode);
+  `rebuild.sh` refuses to `switch`/`boot` while those placeholders are there.
+  The QEMU/Boxes test VM's generated file is kept as
+  `hosts/framework/hardware-configuration.vm.nix` — copy it over the template
+  when rebuilding the VM:
+  `cp hosts/framework/hardware-configuration.vm.nix hosts/framework/hardware-configuration.nix`
+- `system.stateVersion` is `26.05` (the release the unstable install ISO is on).
+  Don't bump it later; it is not a nixpkgs pin.
+- Bootloader: `configuration.nix` asks for systemd-boot (correct on the real
+  Framework, which is UEFI). `default.nix` additionally imports
+  `bootloader-bios.nix` when `/sys/firmware/efi` is absent, which keeps GRUB on
+  `/dev/vda` for BIOS installs instead of failing on systemd-boot.
+- `environment.extraOutputsToInstall` is forced to `[ "man" "info" ]`: with
+  this nixpkgs pin the `python3.12-doc` output fails to build (sphinx/docutils)
+  and is not in `cache.nixos.org`, which would break the whole system build.
+- `vscode` is wrapped in `overrideAttrs` (see the comment in
+  `configuration.nix`) because 1.144 moved its bundled ripgrep to
+  `@vscode/ripgrep-universal` while nixpkgs still patches the old path.
+- Editor/multiplexer: `EDITOR`/`VISUAL`/`GIT_EDITOR` are set to `nvim`, and the
+  `programs.nix-ld` library list carries what prebuilt apps (`herdr-app`)
+  dlopen: X11/xcb(+keysyms/wm)/xkbcommon, Wayland, vulkan, mesa/libGL, DRM/GBM,
+  ALSA/PulseAudio, libnotify and fonts. `tree-sitter` is installed for
+  nvim-treesitter.
 - `hosts/framework` uses the `nixpkgs-latest` flake input instead of the main
   (Oct 2024) `nixpkgs` pin, because Strix Halo needs a recent kernel/Mesa. Nix
   resolves it on first eval; other hosts are untouched. Run
@@ -201,6 +234,8 @@ bluetoothctl show
   `transmission-gtk` / `protonup` / `libEGL`, which is why the flake needs
   `nixpkgs-latest` (or `nix flake update`) rather than the committed lock.
 - Prebuilt GUI apps (`herdr-app` etc.) run through `programs.nix-ld`, whose
-  library list includes libxcb/libxkbcommon/X11/Wayland/vulkan/mesa/fonts.
+  library list includes libxcb/libxkbcommon/X11/Wayland/vulkan/mesa/fonts/audio.
 - Rebuild any host with: `sudo nixos-rebuild switch --flake .#<host>`, or for
-  `framework` without flakes: `sudo nixos-rebuild switch -f hosts/framework/default.nix`.
+  `framework` without flakes: `sudo ~/base-nix/hosts/framework/rebuild.sh`
+  (equivalently `sudo nixos-rebuild switch -f hosts/framework/default.nix
+  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos`).

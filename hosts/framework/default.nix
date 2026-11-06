@@ -23,5 +23,11 @@
 # rebuild.sh passes that as -I nixpkgs=<pinned>.
 
 import <nixpkgs/nixos> {
-  configuration = ./configuration.nix;
+  # configuration.nix stays untouched; the BIOS fallback is only pulled in on
+  # machines that booted without EFI firmware (e.g. the QEMU/Boxes test VM,
+  # which has GRUB on /dev/vda instead of an ESP).
+  configuration = { lib, ... }: {
+    imports = [ ./configuration.nix ]
+      ++ lib.optional (!builtins.pathExists /sys/firmware/efi) ./bootloader-bios.nix;
+  };
 }
