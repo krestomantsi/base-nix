@@ -153,7 +153,6 @@
       # general
       firefox-bin
       time
-      microsoft-edge
       neovim
       # nvim-treesitter needs the CLI to compile parsers; nvim itself is above.
       tree-sitter
