@@ -1,0 +1,18 @@
+# Optional: pin nixpkgs without flakes.
+#
+# Rename this file to `nixpkgs.nix` and fill in REV and SHA256. `rebuild.sh`
+# picks it up automatically and passes it to nixos-rebuild via -I nixpkgs=...
+#
+#   1. pick a commit on the unstable branch:
+#        git ls-remote https://github.com/NixOS/nixpkgs nixos-unstable
+#   2. get its unpacked hash:
+#        nix-prefetch-url --unpack \
+#          https://github.com/NixOS/nixpkgs/archive/<REV>.tar.gz
+#   3. paste both below and `mv nixpkgs.nix.example nixpkgs.nix`
+#
+# To move the pin later, repeat steps 1-2.
+
+builtins.fetchTarball {
+  url = "https://github.com/NixOS/nixpkgs/archive/REPLACE_WITH_REV.tar.gz";
+  sha256 = "REPLACE_WITH_SHA256";
+}

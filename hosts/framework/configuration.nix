@@ -11,6 +11,9 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # GNOME Boxes/QEMU guest integration (clipboard, shared folders, USB).
+      # Drop this line once the Framework is installed on real hardware.
+      ./vm.nix
     ];
 
   # --------------------------------------------------------------- boot -----
@@ -90,7 +93,7 @@
   services.printing.enable = true;
 
   # -------------------------------------------------------------- audio -----
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -146,7 +149,7 @@
       fd
       alacritty
       unzip
-      transmission-gtk
+      transmission_4-gtk
       xournalpp
       vlc
       typst
@@ -202,7 +205,7 @@
     vim
     zsh-fzf-history-search
     vscode
-    protonup
+    protonup-ng
     lutris
     xdg-utils
     cmake
@@ -255,6 +258,23 @@
     cmake
     gnumake
     openssl
+    # Prebuilt GUI binaries (herdr-app etc.): X11/Wayland + GPU + fonts.
+    # herdr-app needs libxcb / libxkbcommon / libxkbcommon-x11 directly and
+    # dlopens libvulkan, libEGL and libwayland-client at runtime.
+    libxcb
+    libxkbcommon
+    libX11
+    libXcursor
+    libXrandr
+    libXi
+    libXinerama
+    wayland
+    vulkan-loader
+    libGL
+    libglvnd
+    fontconfig
+    freetype
+    harfbuzz
   ];
 
   # ------------------------------------------------------------- gaming -----

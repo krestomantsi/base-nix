@@ -9,7 +9,46 @@ my nix dotfiles (WIP)
 | `default`   | `.#default`             | top-level `configuration.nix` (NVIDIA)       |
 | `laptop`    | `.#laptop`              | laptop, NVIDIA                               |
 | `desktop`   | `.#desktop`             | desktop, NVIDIA + CUDA                       |
-| `framework` | `.#framework`           | Framework Desktop, full AMD (Ryzen AI Max)   |
+| `framework` | `.#framework`           | Framework Desktop, full AMD (Ryzen AI Max), own `nixpkgs-latest` input |
+
+## Two ways to build `framework`
+
+| | Command | Needs |
+|---|---|---|
+| **No flakes** (default below) | `sudo nixos-rebuild switch -f hosts/framework/default.nix` or `./hosts/framework/rebuild.sh` | a `nixos-unstable` channel (or `hosts/framework/nixpkgs.nix` pin) |
+| Flakes | `sudo nixos-rebuild switch --flake .#framework` | `nix-command flakes` |
+
+The host module itself (`hosts/framework/configuration.nix`) is identical for
+both — it contains nothing flake-specific.
+
+**Why two files:** `nixos-rebuild -f FILE` evaluates FILE and reads
+`config.system.build.*` from it, so FILE must be a *system* expression →
+`default.nix`. `nixos-install` instead passes the file as `-I nixos-config=`,
+so it wants a *module* → `configuration.nix`.
+
+### Non-flake files
+
+- `hosts/framework/default.nix` — the `-f` entry point (system expression wrapping `configuration.nix`).
+- `hosts/framework/rebuild.sh` — `switch` / `boot` / `--install`, picks up the pin automatically.
+- `hosts/framework/nixpkgs.nix.example` — optional tarball pin; rename to `nixpkgs.nix` after filling in rev + sha256.
+- `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — non-flake dev shells, copy/symlink into the repos.
+
+```sh
+# set up the channel once on the installed system
+sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+sudo nix-channel --update
+
+# rebuild
+sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix
+# or
+~/base-nix/hosts/framework/rebuild.sh
+
+# dev shells
+cp ~/base-nix/shells/rust_repo/shell.nix ~/rust_repo/
+cp ~/base-nix/shells/yggdrasil/shell.nix ~/yggdrasil/
+cd ~/rust_repo && nix-shell
+cd ~/yggdrasil && nix-shell
+```
 
 ## Setting up the Framework Desktop
 
@@ -64,17 +103,50 @@ has placeholder UUIDs and will not boot as-is.
 
 ### 5. Get this repo onto the target and install
 
+**Without flakes (channel-based):**
+
 ```sh
-git clone https://github.com/<you>/base-nix /mnt/home/nick/base-nix
-# copy in the generated hardware config
+git clone https://github.com/krestomantsi/base-nix /mnt/home/nick/base-nix
+cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/nick/base-nix/hosts/framework/
+
+# fresh nixpkgs on the live ISO (its bundled one can be old) and copy it to
+# the target so the installed system has a channel
+nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+nix-channel --update
+
+# NOTE: nixos-install takes a MODULE via NIXOS_CONFIG, not -f
+NIXOS_CONFIG=/mnt/home/nick/base-nix/hosts/framework/configuration.nix \
+  nixos-install --root /mnt \
+  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
+```
+
+or simply `./hosts/framework/rebuild.sh --install /mnt` from inside the repo.
+
+`nixos-install` asks for a root password; set one, then reboot.
+
+**With flakes:**
+
+```sh
+git clone https://github.com/krestomantsi/base-nix /mnt/home/nick/base-nix
 cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/nick/base-nix/hosts/framework/
 
 cd /mnt/home/nick/base-nix
-nix flake update          # REQUIRED: lockfile is from Oct 2024 (old kernel/Mesa)
 
-# The live ISO does NOT enable flakes by default (the installed system does):
-sudo NIX_CONFIG='experimental-features = nix-command flakes' \
-  nixos-install --flake .#framework --root /mnt
+# The live ISO does NOT enable flakes by default (the installed system does).
+# Export it once; it applies to every nix command in this shell:
+export NIX_CONFIG='experimental-features = nix-command flakes'
+
+# No `nix flake update` needed: the framework host uses its own `nixpkgs-latest`
+# input, which nix resolves automatically here (first eval, needs network).
+nixos-install --flake .#framework --root /mnt
+```
+
+If you'd rather make flakes permanent on the live ISO:
+
+```sh
+mkdir -p /etc/nix
+echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+systemctl restart nix-daemon
 ```
 
 After the first boot, confirm with `nix config show experimental-features`
@@ -85,9 +157,19 @@ After the first boot, confirm with `nix config show experimental-features`
 ### 6. First boot
 
 ```sh
-sudo nixos-rebuild switch --flake ~/base-nix#framework
+# non-flake
+sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix
+# or: ~/base-nix/hosts/framework/rebuild.sh
+
 passwd                       # set nick's password
 fwupdmgr get-devices         # Framework BIOS/EC firmware updates via LVFS
+```
+
+If the channel wasn't copied during install, add it now:
+
+```sh
+sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+sudo nix-channel --update
 ```
 
 ### 7. Sanity checks
@@ -102,6 +184,10 @@ bluetoothctl show
 
 ## Notes
 
+- `hosts/framework` uses the `nixpkgs-latest` flake input instead of the main
+  (Oct 2024) `nixpkgs` pin, because Strix Halo needs a recent kernel/Mesa. Nix
+  resolves it on first eval; other hosts are untouched. Run
+  `nix flake update nixpkgs-latest` on the Framework to move it forward later.
 - `hosts/framework` is the full-AMD host: no NVIDIA driver, no CUDA, no
   `cuda-maintainers` substituter. It enables `linuxPackages_latest`,
   `hardware.graphics` (32-bit included), firmware blobs, `fwupd`,
@@ -109,4 +195,12 @@ bluetoothctl show
 - ROCm is commented out in `hardware.graphics.extraPackages` — gfx1151 works
   with recent ROCm but the closure is huge. Add `"render"`/`"video"` to the
   user's `extraGroups` when enabling it (already done in the framework host).
-- Rebuild any host with: `sudo nixos-rebuild switch --flake .#<host>`.
+- `hosts/framework` targets **current unstable (26.05+)**: `services.desktopManager.gnome`,
+  `services.displayManager.gdm`, `services.pulseaudio`, `transmission_4-gtk`,
+  `protonup-ng`, `libglvnd`. On the old Oct-2024 pin those are `services.xserver.*` /
+  `transmission-gtk` / `protonup` / `libEGL`, which is why the flake needs
+  `nixpkgs-latest` (or `nix flake update`) rather than the committed lock.
+- Prebuilt GUI apps (`herdr-app` etc.) run through `programs.nix-ld`, whose
+  library list includes libxcb/libxkbcommon/X11/Wayland/vulkan/mesa/fonts.
+- Rebuild any host with: `sudo nixos-rebuild switch --flake .#<host>`, or for
+  `framework` without flakes: `sudo nixos-rebuild switch -f hosts/framework/default.nix`.
