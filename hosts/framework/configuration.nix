@@ -129,13 +129,11 @@
       # general
       firefox-bin
       time
-      microsoft-edge
       neovim
       # nvim-treesitter needs the CLI to compile parsers; nvim itself is above.
       tree-sitter
       ranger
       git
-      julia-bin
       htop
       kitty
       zoxide
@@ -157,13 +155,10 @@
       vlc
       typst
       zathura
-      joshuto
       yazi
       nushell
       docker
-      poetry
       tor-browser
-      zed-editor
       zellij
       tmux
       wl-clipboard
