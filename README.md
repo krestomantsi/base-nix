@@ -54,6 +54,32 @@ cd ~/rust_repo && nix-shell
 cd ~/yggdrasil && nix-shell
 ```
 
+## The laptop host (non-flake)
+
+`hosts/laptop/` has the same shape as the framework host: `default.nix` (the
+`-f` system expression), `configuration.nix` (the module), `rebuild.sh`.
+
+```sh
+sudo ~/base-nix/hosts/laptop/rebuild.sh
+# or by hand
+sudo nixos-rebuild switch -f ~/base-nix/hosts/laptop/default.nix \
+  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
+```
+
+Same as the framework: 26.05 option names, `nix-ld` libraries for prebuilt GUI
+apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, the `python3.12-doc` and
+`vscode` build workarounds, Docker/libvirt, Steam + gamemode, zram, `fwupd`.
+
+Kept laptop-specific, deliberately different from the framework:
+
+| | laptop | framework |
+|---|---|---|
+| GPU | `services.xserver.videoDrivers = [ "nvidia" ]`, PRIME power management, `cudaSupport` + cuda cache | none (Radeon 8060S) |
+| `system.stateVersion` | **23.11** (install release — never bump) | 26.05 (fresh install) |
+| kernel | nixpkgs default, so the NVIDIA module matches | `linuxPackages_latest` |
+| power | `powerManagement.enable`, powertop, zram 25%, `services.libinput` | `power-profiles-daemon`, zram 15% |
+| extra | `services.xserver.wacom` (stylus), touchpad | — |
+
 ## Setting up the Framework Desktop
 
 ### 1. BIOS / firmware
