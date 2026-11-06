@@ -1,4 +1,4 @@
-# ~/rust_repo/shell.nix — non-flake dev shell.
+# ~/rust_repo/shell.nix — dev shell.
 #
 #   cd ~/rust_repo && nix-shell        (or: nix-shell --pure)
 #

@@ -1,4 +1,4 @@
-# ~/yggdrasil/shell.nix — non-flake dev shell.
+# ~/yggdrasil/shell.nix — dev shell.
 #
 #   cd ~/yggdrasil && nix-shell
 #   ./build_server.sh

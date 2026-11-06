@@ -1,4 +1,4 @@
-# Odin + Rust + Python (uv) dev shell — non-flake, no `flake.nix` needed.
+# Odin + Rust + Python (uv) dev shell — plain nix-shell.
 #
 #   nix-shell ~/base-nix/shells/dev/shell.nix
 #   # or copy/symlink it into a project:

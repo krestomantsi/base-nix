@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuild the laptop host without flakes.
+# Rebuild the laptop host with plain nixos-rebuild.
 #
 #   ./rebuild.sh              -> nixos-rebuild switch
 #   ./rebuild.sh boot         -> nixos-rebuild boot

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuild the Framework Desktop host without flakes.
+# Rebuild the Framework Desktop host with plain nixos-rebuild.
 #
 #   ./rebuild.sh              -> nixos-rebuild switch
 #   ./rebuild.sh boot         -> nixos-rebuild boot

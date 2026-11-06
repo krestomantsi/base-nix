@@ -1,6 +1,6 @@
 # Laptop — AMD CPU + NVIDIA dGPU (CUDA), hybrid graphics.
 #
-# Same structure as hosts/framework (non-flake entry point + rebuild.sh, 26.05
+# Same structure as hosts/framework (default.nix + rebuild.sh, 26.05
 # option names, shared nix-ld/herdr-app libraries, dev tooling), with the
 # laptop-specific parts kept: NVIDIA/CUDA, PRIME power management, touchpad,
 # wacom, battery/power tuning.
@@ -283,7 +283,9 @@
 
   users.defaultUserShell = pkgs.nushell;
   users.users.nick.shell = pkgs.nushell;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # nix-command = the `nix build` / `nix shell` / `nix profile` / `nix store`
+  # subcommands; it does not involve lockfiles or inputs.
+  nix.settings.experimental-features = [ "nix-command" ];
 
   # -------------------------------------------------------- virtualisation --
   virtualisation.libvirtd.enable = true;

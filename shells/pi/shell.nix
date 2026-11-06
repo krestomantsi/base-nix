@@ -1,4 +1,4 @@
-# Flake-free shell with a current pi, independent of your channel.
+# Shell with a current pi, independent of your channel.
 #
 #   nix-shell ~/base-nix/shells/pi/shell.nix --run "pi --version"
 #   nix-shell ~/base-nix/shells/pi/shell.nix          # interactive: run `pi`

@@ -1,9 +1,10 @@
 # Framework Desktop — full AMD (Ryzen AI Max / "Strix Halo", Radeon 8060S iGPU).
 # No NVIDIA, no CUDA: the dGPU sections of the other hosts are intentionally absent.
 #
-# NOTE: the pinned nixpkgs in flake.lock is from Oct 2024. Strix Halo (gfx1151)
-# needs kernel >= 6.15 and Mesa >= 25.1, so run `nix flake update` before
-# building this host (see the setup notes at the bottom of the repo README).
+# Strix Halo (gfx1151) needs kernel >= 6.15 and Mesa >= 25.1, so keep the
+# channel current (`sudo nix-channel --update`) or use the pinned
+# hosts/framework/nixpkgs.nix; an old channel cannot drive the GPU or the
+# MT7925 Wi-Fi.
 
 { config, pkgs, lib, ... }:
 
@@ -257,7 +258,9 @@
 
   users.defaultUserShell = pkgs.nushell;
   users.users.nick.shell = pkgs.nushell;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # nix-command = the `nix build` / `nix shell` / `nix profile` / `nix store`
+  # subcommands; it does not involve lockfiles or inputs.
+  nix.settings.experimental-features = [ "nix-command" ];
 
   # -------------------------------------------------------- virtualisation --
   virtualisation.libvirtd.enable = true;

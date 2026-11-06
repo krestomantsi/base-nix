@@ -1,4 +1,4 @@
-# Non-flake entry point for the laptop.
+# Entry point for the laptop (`nixos-rebuild -f`).
 #
 # `nixos-rebuild -f` evaluates this file and then takes
 # `config.system.build.<...>` from it, so this file must be a *system*

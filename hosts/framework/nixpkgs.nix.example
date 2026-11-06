@@ -1,4 +1,4 @@
-# Optional: pin nixpkgs without flakes.
+# Optional: pin nixpkgs with a tarball (no lockfile).
 #
 # Rename this file to `nixpkgs.nix` and fill in REV and SHA256. `rebuild.sh`
 # picks it up automatically and passes it to nixos-rebuild via -I nixpkgs=...

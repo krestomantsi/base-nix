@@ -2,38 +2,24 @@
 
 my nix dotfiles (WIP)
 
+Plain NixOS: `<nixpkgs>` from a channel, `nixos-rebuild -f`, `nix-shell`.
+No flake files, no lockfile.
+
 ## Hosts
 
-| Host        | Flake attr              | Notes                                        |
-|-------------|-------------------------|----------------------------------------------|
-| `default`   | `.#default`             | top-level `configuration.nix` (NVIDIA)       |
-| `laptop`    | `.#laptop`              | laptop, NVIDIA                               |
-| `desktop`   | `.#desktop`             | desktop, NVIDIA + CUDA                       |
-| `framework` | `.#framework`           | Framework Desktop, full AMD (Ryzen AI Max), own `nixpkgs-latest` input |
-
-## Two ways to build `framework`
-
-| | Command | Needs |
+| Host | Config | Rebuild |
 |---|---|---|
-| **No flakes** (default below) | `sudo ~/base-nix/hosts/framework/rebuild.sh` or `sudo nixos-rebuild switch -f hosts/framework/default.nix -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos` | a `nixos-unstable` channel (or `hosts/framework/nixpkgs.nix` pin) |
-| Flakes | `sudo nixos-rebuild switch --flake .#framework` | `nix-command flakes` |
+| `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `sudo ~/base-nix/hosts/framework/rebuild.sh` |
+| `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `sudo ~/base-nix/hosts/laptop/rebuild.sh` |
+| `desktop` | `hosts/desktop/` — NVIDIA + CUDA (**not migrated yet**: old option names, `nerdfonts`, `transmission-gtk`, `protonup`, `libEGL`) | — |
+| `default` | top-level `configuration.nix` (**not migrated yet**, same issues) | — |
 
-The host module itself (`hosts/framework/configuration.nix`) is identical for
-both — it contains nothing flake-specific.
+## How a host is built
 
-**Why two files:** `nixos-rebuild -f FILE` evaluates FILE and reads
+**Why two files per host:** `nixos-rebuild -f FILE` evaluates FILE and reads
 `config.system.build.*` from it, so FILE must be a *system* expression →
 `default.nix`. `nixos-install` instead passes the file as `-I nixos-config=`,
 so it wants a *module* → `configuration.nix`.
-
-### Non-flake files
-
-- `hosts/framework/default.nix` — the `-f` entry point (system expression wrapping `configuration.nix`).
-- `hosts/framework/bootloader-bios.nix` — imported by `default.nix` **only when `/sys/firmware/efi` is missing**; a BIOS install (e.g. the QEMU/Boxes test VM) keeps GRUB on `/dev/vda` instead of trying systemd-boot. Real UEFI hardware is unaffected and gets systemd-boot.
-- `hosts/framework/rebuild.sh` — `switch` / `boot` / `--install`, picks up the pin automatically and passes `-I nixpkgs=<root channel>` because `sudo` drops `NIX_PATH`.
-- `hosts/framework/nixpkgs.nix.example` — optional tarball pin; rename to `nixpkgs.nix` after filling in rev + sha256.
-- `shells/dev/shell.nix` — **one dev shell with Odin (`odin` + `ols`), Rust (`rustup`) and Python (`uv`)**, plus `nvim`/`tree-sitter`/`ripgrep`/`fd` for the herdr-app + nvim workflow.
-- `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — non-flake dev shells, copy/symlink into the repos.
 
 ```sh
 # set up the channel once on the installed system
@@ -42,33 +28,47 @@ sudo nix-channel --update
 
 # rebuild (run as root; rebuild.sh adds -I nixpkgs=<root channel> for you)
 sudo ~/base-nix/hosts/framework/rebuild.sh
+sudo ~/base-nix/hosts/laptop/rebuild.sh
+
 # or by hand
 sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
   -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
+```
 
+`rebuild.sh` takes `switch` (default), `boot`, `test`, or `--install /mnt`.
+
+## Files
+
+- `hosts/<host>/configuration.nix` — the NixOS module (all settings).
+- `hosts/<host>/default.nix` — the `-f` entry point (system expression wrapping the module).
+- `hosts/<host>/hardware-configuration.nix` — `nixos-generate-config` output.
+- `hosts/<host>/rebuild.sh` — `switch` / `boot` / `test` / `--install`, passes `-I nixpkgs=<root channel>` because `sudo` drops `NIX_PATH`.
+- `hosts/framework/bootloader-bios.nix` — imported by `default.nix` **only when `/sys/firmware/efi` is missing**; a BIOS install (e.g. the QEMU/Boxes test VM) keeps GRUB on `/dev/vda` instead of trying systemd-boot. Real UEFI hardware is unaffected.
+- `hosts/framework/hardware-configuration.vm.nix` — the QEMU/Boxes machine's scan; copy it over `hardware-configuration.nix` when rebuilding the VM.
+- `hosts/framework/nixpkgs.nix.example` — optional tarball pin; rename to `nixpkgs.nix` after filling in rev + sha256, and `rebuild.sh` will use it instead of the channel.
+- `hosts/framework/services/yggdrasil.nix` — declarative yggdrasil service + backup timer (see below; not imported yet).
+- `hosts/framework/vm.nix` — SPICE/QEMU guest integration (clipboard, shared folders, USB) for testing in GNOME Boxes; not imported on bare metal.
+- `hosts/framework/diagnose.sh` — build once, print only the failing derivation(s), keyword matches and `df -h / /nix`.
+- `shells/dev/shell.nix` — **one dev shell with Odin (`odin` + `ols`), Rust (`rustup`) and Python (`uv`)**, plus `nvim`/`tree-sitter`/`ripgrep`/`fd` for the herdr-app + nvim workflow.
+- `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — dev shells, copy/symlink into the repos.
+- `shells/pi/shell.nix` — a shell with a current `pi`, independent of the channel (pinned tarball).
+
+```sh
 # dev shells
 nix-shell ~/base-nix/shells/dev/shell.nix        # odin + ols + rustup + uv + nvim
 cp ~/base-nix/shells/rust_repo/shell.nix ~/rust_repo/
 cp ~/base-nix/shells/yggdrasil/shell.nix ~/yggdrasil/
 cd ~/rust_repo && nix-shell
 cd ~/yggdrasil && nix-shell
+nix-shell ~/base-nix/shells/pi/shell.nix --run "pi --version"
 ```
 
-## The laptop host (non-flake)
+## The laptop host
 
-`hosts/laptop/` has the same shape as the framework host: `default.nix` (the
-`-f` system expression), `configuration.nix` (the module), `rebuild.sh`.
-
-```sh
-sudo ~/base-nix/hosts/laptop/rebuild.sh
-# or by hand
-sudo nixos-rebuild switch -f ~/base-nix/hosts/laptop/default.nix \
-  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
-```
-
-Same as the framework: 26.05 option names, `nix-ld` libraries for prebuilt GUI
-apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, the `python3.12-doc` and
-`vscode` build workarounds, Docker/libvirt, Steam + gamemode, zram, `fwupd`.
+Same shape as the framework host. Same 26.05 option names, `nix-ld` libraries
+for prebuilt GUI apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, the
+`python3.12-doc` and `vscode` build workarounds, Docker/libvirt, Steam +
+gamemode, zram, `fwupd`.
 
 Kept laptop-specific, deliberately different from the framework:
 
@@ -93,8 +93,8 @@ Kept laptop-specific, deliberately different from the framework:
 
 ### 2. Installer USB
 
-Download the **NixOS unstable (GNOME or minimal) ISO** — 24.11/25.05 ISO
-kernels are too old to drive the Radeon 8060S / MT7925 reliably:
+Download the **NixOS unstable (GNOME or minimal) ISO** — older release ISO
+kernels cannot drive the Radeon 8060S / MT7925 reliably:
 
 ```sh
 # replace sdX with the USB stick (check with lsblk!)
@@ -133,8 +133,6 @@ has placeholder UUIDs and will not boot as-is.
 
 ### 5. Get this repo onto the target and install
 
-**Without flakes (channel-based):**
-
 ```sh
 git clone https://github.com/krestomantsi/base-nix /mnt/home/nick/base-nix
 cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/nick/base-nix/hosts/framework/
@@ -154,40 +152,9 @@ or simply `./hosts/framework/rebuild.sh --install /mnt` from inside the repo.
 
 `nixos-install` asks for a root password; set one, then reboot.
 
-**With flakes:**
-
-```sh
-git clone https://github.com/krestomantsi/base-nix /mnt/home/nick/base-nix
-cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/nick/base-nix/hosts/framework/
-
-cd /mnt/home/nick/base-nix
-
-# The live ISO does NOT enable flakes by default (the installed system does).
-# Export it once; it applies to every nix command in this shell:
-export NIX_CONFIG='experimental-features = nix-command flakes'
-
-# No `nix flake update` needed: the framework host uses its own `nixpkgs-latest`
-# input, which nix resolves automatically here (first eval, needs network).
-nixos-install --flake .#framework --root /mnt
-```
-
-If you'd rather make flakes permanent on the live ISO:
-
-```sh
-mkdir -p /etc/nix
-echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
-systemctl restart nix-daemon
-```
-
-After the first boot, confirm with `nix config show experimental-features`
-(should print `flakes nix-command`).
-
-`nixos-install` asks for a root password; set one, then reboot.
-
 ### 6. First boot
 
 ```sh
-# non-flake
 sudo ~/base-nix/hosts/framework/rebuild.sh
 # or: sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
 #       -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
@@ -213,11 +180,39 @@ ip -br a                          # 5GbE + Wi-Fi 7
 bluetoothctl show
 ```
 
+## Deploying apps on the host
+
+- **yggdrasil**: `hosts/framework/services/yggdrasil.nix` is a declarative
+  replacement for the unit-writing half of `~/yggdrasil/install_server_service.sh`
+  (server unit, memory limits, daily backup timer). The binary is still built by
+  `~/yggdrasil/build_server.sh`. Import it from the host:
+
+  ```nix
+  imports = [ ... ./services/yggdrasil.nix ];
+  ```
+
+- **rust_repo**: keep `~/rust_repo/docker_setup.sh` for building/loading the
+  image. To have the container start on boot, declare it:
+
+  ```nix
+  virtualisation.oci-containers.containers.rust-server = {
+    image = "rust-server-app:latest";
+    volumes = [
+      "/home/nick/onedrive/data_sources:/mnt/onedrive/data_sources:ro"
+      "rust-server-peer-benchmarking:/usr/app/projects/peer_benchmarking/IMO_DCS"
+    ];
+    ports = [ "5152:5152" ];
+  };
+  ```
+
+- Never move runtime state into Nix: `$HOME`, `server.env` (mode 600), the
+  routing graph, SQLite files and model artifacts stay outside the store.
+
 ## Notes
 
-- **Bare metal:** `hosts/framework/configuration.nix` no longer imports
-  `vm.nix`, so no SPICE/QEMU guest services are enabled. Add `./vm.nix` back to
-  `imports` if you boot this host in GNOME Boxes/QEMU.
+- **Bare metal:** `hosts/framework/configuration.nix` does not import `vm.nix`,
+  so no SPICE/QEMU guest services are enabled. Add `./vm.nix` back to `imports`
+  if you boot this host in GNOME Boxes/QEMU.
 - **Replace `hosts/framework/hardware-configuration.nix`** with the output of
   `nixos-generate-config` from the real machine (step 4). The tracked file is a
   template with placeholder UUIDs (an ESP on `/boot`, NVMe, AMD microcode);
@@ -226,27 +221,28 @@ bluetoothctl show
   `hosts/framework/hardware-configuration.vm.nix` — copy it over the template
   when rebuilding the VM:
   `cp hosts/framework/hardware-configuration.vm.nix hosts/framework/hardware-configuration.nix`
-- `system.stateVersion` is `26.05` (the release the unstable install ISO is on).
-  Don't bump it later; it is not a nixpkgs pin.
+- `system.stateVersion` is `26.05` on the framework (the release the unstable
+  install ISO is on) and `23.11` on the laptop (its install release). It is not
+  a nixpkgs pin — don't bump it.
 - Bootloader: `configuration.nix` asks for systemd-boot (correct on the real
   Framework, which is UEFI). `default.nix` additionally imports
   `bootloader-bios.nix` when `/sys/firmware/efi` is absent, which keeps GRUB on
   `/dev/vda` for BIOS installs instead of failing on systemd-boot.
 - `environment.extraOutputsToInstall` is forced to `[ "man" "info" ]`: with
-  this nixpkgs pin the `python3.12-doc` output fails to build (sphinx/docutils)
+  this nixpkgs the `python3.12-doc` output fails to build (sphinx/docutils)
   and is not in `cache.nixos.org`, which would break the whole system build.
 - `vscode` is wrapped in `overrideAttrs` (see the comment in
   `configuration.nix`) because 1.144 moved its bundled ripgrep to
   `@vscode/ripgrep-universal` while nixpkgs still patches the old path.
+- `microsoft-edge` is dropped: its build fails and is not in the binary cache.
 - Editor/multiplexer: `EDITOR`/`VISUAL`/`GIT_EDITOR` are set to `nvim`, and the
   `programs.nix-ld` library list carries what prebuilt apps (`herdr-app`)
   dlopen: X11/xcb(+keysyms/wm)/xkbcommon, Wayland, vulkan, mesa/libGL, DRM/GBM,
   ALSA/PulseAudio, libnotify and fonts. `tree-sitter` is installed for
   nvim-treesitter.
-- `hosts/framework` uses the `nixpkgs-latest` flake input instead of the main
-  (Oct 2024) `nixpkgs` pin, because Strix Halo needs a recent kernel/Mesa. Nix
-  resolves it on first eval; other hosts are untouched. Run
-  `nix flake update nixpkgs-latest` on the Framework to move it forward later.
+- `nix.settings.experimental-features = [ "nix-command" ]` — that is the `nix`
+  subcommand family (`nix build`, `nix shell`, `nix profile`, `nix store`), not
+  the flake feature.
 - `hosts/framework` is the full-AMD host: no NVIDIA driver, no CUDA, no
   `cuda-maintainers` substituter. It enables `linuxPackages_latest`,
   `hardware.graphics` (32-bit included), firmware blobs, `fwupd`,
@@ -254,14 +250,12 @@ bluetoothctl show
 - ROCm is commented out in `hardware.graphics.extraPackages` — gfx1151 works
   with recent ROCm but the closure is huge. Add `"render"`/`"video"` to the
   user's `extraGroups` when enabling it (already done in the framework host).
-- `hosts/framework` targets **current unstable (26.05+)**: `services.desktopManager.gnome`,
-  `services.displayManager.gdm`, `services.pulseaudio`, `transmission_4-gtk`,
-  `protonup-ng`, `libglvnd`. On the old Oct-2024 pin those are `services.xserver.*` /
-  `transmission-gtk` / `protonup` / `libEGL`, which is why the flake needs
-  `nixpkgs-latest` (or `nix flake update`) rather than the committed lock.
-- Prebuilt GUI apps (`herdr-app` etc.) run through `programs.nix-ld`, whose
-  library list includes libxcb/libxkbcommon/X11/Wayland/vulkan/mesa/fonts/audio.
-- Rebuild any host with: `sudo nixos-rebuild switch --flake .#<host>`, or for
-  `framework` without flakes: `sudo ~/base-nix/hosts/framework/rebuild.sh`
-  (equivalently `sudo nixos-rebuild switch -f hosts/framework/default.nix
-  -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos`).
+- `hosts/framework` and `hosts/laptop` target **current unstable (26.05+)**:
+  `services.desktopManager.gnome`, `services.displayManager.gdm`,
+  `services.pulseaudio`, `services.libinput`, `transmission_4-gtk`,
+  `protonup-ng`, `libglvnd`. On an older channel those are `services.xserver.*` /
+  `transmission-gtk` / `protonup` / `libEGL` — so keep the channel current with
+  `sudo nix-channel --update`.
+- `hosts/desktop` and the top-level `configuration.nix` still use the old
+  option names and removed packages; they need the same migration before they
+  will evaluate.
