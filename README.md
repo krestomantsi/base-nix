@@ -11,10 +11,8 @@ No flake files, no lockfile.
 |---|---|---|
 | `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `~/base-nix/hosts/framework/rebuild.sh` |
 | `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `~/base-nix/hosts/laptop/rebuild.sh` |
-| `desktop` | `hosts/desktop/` — NVIDIA + CUDA (**not migrated yet**: old option names, `nerdfonts`, `transmission-gtk`, `protonup`, `libEGL`) | — |
-| `default` | top-level `configuration.nix` (**not migrated yet**, same issues) | — |
 
-All four host configurations import `hosts/common/cli.nix`: it installs
+Both remaining host configurations import `hosts/common/cli.nix`: it installs
 `pi-coding-agent` system-wide (run `pi`) and disables Nushell's welcome banner,
 including its first-commit age and startup-time display. Older channels without
 pi use the same pinned nixpkgs revision as `shells/pi/shell.nix`.
@@ -289,6 +287,3 @@ bluetoothctl show
   `protonup-ng`, `libglvnd`. On an older channel those are `services.xserver.*` /
   `transmission-gtk` / `protonup` / `libEGL` — both hosts' `rebuild.sh` scripts
   keep the channel current automatically.
-- `hosts/desktop` and the top-level `configuration.nix` still use the old
-  option names and removed packages; they need the same migration before they
-  will evaluate.
