@@ -6,7 +6,7 @@
 # Covers what the repo actually needs:
 #   - odin compiler                          -> pkgs.odin
 #   - external/sqlite3/lib_build/build.sh    -> cc + ar (gcc + binutils)
-#   - vendor:raylib (14 files)               -> raylib + GL/X11/Wayland headers
+#   - vendor:raylib (14 files)               -> raylib + compiled raygui + GL/X11/Wayland headers
 #   - remote_curl_posix.odin "system:curl"   -> libcurl from pkgs.curl
 #   - pyproject.toml (cartopy, PyQt6, ...)   -> uv (nix-ld makes uv's CPython work)
 #   - justfile                               -> just
@@ -31,6 +31,7 @@ pkgs.mkShell {
     # linked by the vendored odin packages
     curl
     raylib
+    (pkgs.callPackage ../common/raygui.nix { }) # system:raygui (not header-only)
     # raylib/GL/X11/Wayland runtime + headers
     libGL
     libx11

@@ -61,6 +61,7 @@ pkgs.mkShell {
     sqlite
     curl
     raylib # vendored odin packages (vendor:raylib)
+    (pkgs.callPackage ../common/raygui.nix { }) # system:raygui (not header-only)
     libGL
     libx11
     libxrandr
