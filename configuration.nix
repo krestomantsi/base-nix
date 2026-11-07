@@ -59,7 +59,7 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
   # fonts
-  fonts.packages = with pkgs; [ nerdfonts roboto-mono cascadia-code ];
+  fonts.packages = with pkgs; [ nerdfonts roboto-mono ];
 
   services.xserver.xkb = {
     layout = "us";
