@@ -12,6 +12,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../common/dev-terminal.nix
       # NOTE: ./vm.nix (GNOME Boxes/QEMU clipboard, shared folders, USB) is
       # intentionally *not* imported now that this runs on bare metal. Add the
       # line back if you boot this config in a VM:
@@ -137,7 +138,6 @@
       git
       htop
       kitty
-      zoxide
       eza
       telegram-desktop
       discord

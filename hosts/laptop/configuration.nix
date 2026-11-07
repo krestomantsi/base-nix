@@ -19,6 +19,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../common/dev-terminal.nix
     ];
 
   # --------------------------------------------------------------- boot -----
@@ -160,7 +161,6 @@
       git
       htop
       kitty
-      zoxide
       eza
       telegram-desktop
       discord
