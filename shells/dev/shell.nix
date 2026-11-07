@@ -43,6 +43,7 @@ pkgs.mkShell {
 
     # ---- rust ----
     rustup
+    trunk # Rust/WASM web application bundler
 
     # ---- python / uv ----
     uv

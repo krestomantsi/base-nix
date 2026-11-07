@@ -14,13 +14,9 @@
 #   sudo NIXOS_CONFIG=~/base-nix/hosts/framework/configuration.nix \
 #     nixos-install --root /mnt
 #
-# nixpkgs comes from <nixpkgs>, i.e. root's channel. Set it up once:
-#
-#   sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
-#   sudo nix-channel --update
-#
-# ...or pin it with hosts/framework/nixpkgs.nix (see nixpkgs.nix.example);
-# rebuild.sh passes that as -I nixpkgs=<pinned>.
+# nixpkgs comes from <nixpkgs>. Use rebuild.sh to refresh root's channel to
+# nixos-unstable and pass its resolved store path explicitly; a manual rebuild
+# does not update the channel. Normal rebuilds deliberately ignore tarball pins.
 
 import <nixpkgs/nixos> {
   # configuration.nix stays untouched; the BIOS fallback is only pulled in on

@@ -8,9 +8,8 @@
 # Deliberate differences from hosts/framework:
 #   * system.stateVersion stays 23.11 — it must match this machine's *install*
 #     release, not the framework's fresh 26.05 install. Do not bump it.
-#   * kernel stays on nixpkgs' default (not linuxPackages_latest) so the NVIDIA
-#     module tracks a kernel it is built against. Uncomment to chase the newest
-#     kernel anyway.
+#   * kernel follows linuxPackages_latest. The NVIDIA driver comes from that
+#     same kernel package set, so its module is built for the selected kernel.
 #   * CUDA: nixpkgs.config.cudaSupport + the cuda-maintainers cache.
 
 { config, pkgs, lib, ... }:
@@ -20,6 +19,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../common/dev-terminal.nix
+      ../common/cli.nix
     ];
 
   # --------------------------------------------------------------- boot -----
@@ -27,7 +27,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 10;
 
-  # boot.kernelPackages = pkgs.linuxPackages_latest; # see header note
+  # Latest packaged kernel (takes effect after reboot).
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # amd-pstate in active mode = best frequency scaling on the AMD CPU.
   boot.kernelParams = [ "amd_pstate=active" ];
@@ -74,6 +75,7 @@
   hardware.nvidia.powerManagement.finegrained = false;
   hardware.nvidia.open = false;
   hardware.nvidia.nvidiaSettings = true;
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
 
   nixpkgs.config.cudaSupport = true;
 
@@ -170,7 +172,7 @@
       libvirt
       libreoffice
       ripgrep
-      nodejs
+      nodejs_latest
       fd
       alacritty
       unzip
@@ -187,14 +189,12 @@
       zed-editor
       zellij
       tmux
-      wl-clipboard
       helix
       unixtools.watch
       bat
       texliveFull
-      julia-bin
       yazi
-      python312
+      python3
       uv
       distrobox
 
@@ -225,29 +225,24 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # NixOS defaults this to [ "man" "info" "doc" ]. With this nixpkgs pin the
-  # python3.12 *doc* output does not build and is not in cache.nixos.org, which
-  # fails the whole system build. Keep man/info pages, skip the doc outputs.
+  # Keep man/info pages, but skip large or uncached documentation outputs.
+  # These previously broke the system build with python3.12-doc.
   environment.extraOutputsToInstall = lib.mkForce [ "man" "info" ];
 
   # ------------------------------------------------------- system packages --
   environment.systemPackages = with pkgs; [
+    trunk # Rust/WASM web application bundler
     vim
     zsh-fzf-history-search
-    # vscode 1.144 ships its bundled ripgrep at
-    # node_modules.asar.unpacked/@vscode/ripgrep-universal/, but the nixpkgs
-    # expression still rm/chmod's .../node_modules/@vscode/ripgrep/bin/rg and
-    # fails (nothing in cache). Pre-create the path so the package's own
-    # `rm` + `ln -s ${ripgrep}/bin/rg` succeeds.
-    (vscode.overrideAttrs (old: {
-      prePatch = (old.prePatch or "") + ''
-        mkdir -p resources/app/node_modules/@vscode/ripgrep/bin
-        touch resources/app/node_modules/@vscode/ripgrep/bin/rg
-      '';
-    }))
+    # Current unstable already fixes the bundled ripgrep path; use the
+    # unmodified package so we can use its binary-cache build.
+    vscode
     protonup-ng
     lutris
     xdg-utils
+    # GNOME handles the clipboard; these expose it to CLI tools and editors.
+    wl-clipboard # wl-copy / wl-paste in Wayland
+    xclip        # legacy clients running through XWayland
     cmake
     gnumake
     libvterm
@@ -257,6 +252,16 @@
     zlib
     pkg-config
   ];
+
+  # --------------------------------------------------------------- git -----
+  # Default commit identity; user/repository Git config can override this.
+  programs.git = {
+    enable = true;
+    config.user = {
+      name = "Nick Lamprinidis";
+      email = "nlamprinidis@eagle.org";
+    };
+  };
 
   # ------------------------------------------------------------ services ----
   services.openssh.enable = true;

@@ -9,10 +9,16 @@ No flake files, no lockfile.
 
 | Host | Config | Rebuild |
 |---|---|---|
-| `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `sudo ~/base-nix/hosts/framework/rebuild.sh` |
-| `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `sudo ~/base-nix/hosts/laptop/rebuild.sh` |
+| `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `~/base-nix/hosts/framework/rebuild.sh` |
+| `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `~/base-nix/hosts/laptop/rebuild.sh` |
 | `desktop` | `hosts/desktop/` — NVIDIA + CUDA (**not migrated yet**: old option names, `nerdfonts`, `transmission-gtk`, `protonup`, `libEGL`) | — |
 | `default` | top-level `configuration.nix` (**not migrated yet**, same issues) | — |
+
+All four host configurations import `hosts/common/cli.nix`: it installs
+`pi-coding-agent` system-wide (run `pi`) and disables Nushell's welcome banner,
+including its first-commit age and startup-time display. Older channels without
+pi use the same pinned nixpkgs revision as `shells/pi/shell.nix`.
+These changes take effect after rebuilding; open a new terminal afterwards.
 
 ## How a host is built
 
@@ -22,33 +28,43 @@ No flake files, no lockfile.
 so it wants a *module* → `configuration.nix`.
 
 ```sh
-# set up the channel once on the installed system
-sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
-sudo nix-channel --update
+# on the laptop: update nixos-unstable, then switch (asks for sudo)
+~/base-nix/hosts/laptop/rebuild.sh
 
-# rebuild (run as root; rebuild.sh adds -I nixpkgs=<root channel> for you)
-sudo ~/base-nix/hosts/framework/rebuild.sh
-sudo ~/base-nix/hosts/laptop/rebuild.sh
+# on the framework: same policy (replace its hardware template first)
+~/base-nix/hosts/framework/rebuild.sh
 
-# or by hand
+# or by hand, using an already-updated root channel
 sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
   -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
 ```
 
-`rebuild.sh` takes `switch` (default), `boot`, `test`, or `--install /mnt`.
+Both scripts have identical behavior: `switch` (default), `boot`, `test`,
+`build`, `dry-build`, `dry-activate`, or `--install /mnt`, plus forwarded flags
+such as `--show-trace`. They always update root's `nixos` channel to
+`nixos-unstable`, including for installs, and stop if the update fails. Neither
+uses a local `nixpkgs.nix` pin. This means latest **channel-tested** packages,
+not necessarily every application's newest upstream release.
+
+A switch activates packages/services now; **reboot to load the new kernel**
+(and the laptop's NVIDIA module). Latest kernels can expose NVIDIA compatibility
+issues; keep a previous boot generation available. A manual `nixos-rebuild` does
+not refresh the channel, so use the corresponding host's script for upgrades.
+Scripts refuse `switch`, `boot`, `test`, and installs with missing hardware files
+or placeholder disk UUIDs. Builds/dry runs can still evaluate a template.
 
 ## Files
 
 - `hosts/<host>/configuration.nix` — the NixOS module (all settings).
 - `hosts/<host>/default.nix` — the `-f` entry point (system expression wrapping the module).
 - `hosts/<host>/hardware-configuration.nix` — `nixos-generate-config` output.
-- `hosts/<host>/rebuild.sh` — `switch` / `boot` / `test` / `--install`, passes `-I nixpkgs=<root channel>` because `sudo` drops `NIX_PATH`.
+- `hosts/<host>/rebuild.sh` — rebuild/install helper, updates `nixos-unstable` first and passes an explicit nixpkgs store path because `sudo` drops `NIX_PATH`.
 - `hosts/framework/bootloader-bios.nix` — imported by `default.nix` **only when `/sys/firmware/efi` is missing**; a BIOS install (e.g. the QEMU/Boxes test VM) keeps GRUB on `/dev/vda` instead of trying systemd-boot. Real UEFI hardware is unaffected.
 - `hosts/framework/hardware-configuration.vm.nix` — the QEMU/Boxes machine's scan; copy it over `hardware-configuration.nix` when rebuilding the VM.
-- `hosts/framework/nixpkgs.nix.example` — optional tarball pin; rename to `nixpkgs.nix` after filling in rev + sha256, and `rebuild.sh` will use it instead of the channel.
+- `hosts/framework/nixpkgs.nix.example` — manual-debugging tarball example only; both rebuild scripts ignore it and any `nixpkgs.nix` copy.
 - `hosts/framework/services/yggdrasil.nix` — declarative yggdrasil service + backup timer (see below; not imported yet).
 - `hosts/framework/vm.nix` — SPICE/QEMU guest integration (clipboard, shared folders, USB) for testing in GNOME Boxes; not imported on bare metal.
-- `hosts/framework/diagnose.sh` — build once, print only the failing derivation(s), keyword matches and `df -h / /nix`.
+- `hosts/framework/diagnose.sh` — build fresh unstable through `rebuild.sh build` (no activation/boot changes), print only the failing derivation(s), keyword matches and `df -h / /nix`.
 - `shells/dev/shell.nix` — **one dev shell with Odin (`odin` + `ols`), Rust (`rustup`) and Python (`uv`)**, plus `nvim`/`tree-sitter`/`ripgrep`/`fd` for the herdr-app + nvim workflow.
 - `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — dev shells, copy/symlink into the repos.
 - `shells/pi/shell.nix` — a shell with a current `pi`, independent of the channel (pinned tarball).
@@ -66,9 +82,9 @@ nix-shell ~/base-nix/shells/pi/shell.nix --run "pi --version"
 ## The laptop host
 
 Same shape as the framework host. Same 26.05 option names, `nix-ld` libraries
-for prebuilt GUI apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, the
-`python3.12-doc` and `vscode` build workarounds, Docker/libvirt, Steam +
-gamemode, zram, `fwupd`.
+for prebuilt GUI apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, skipped
+`doc` outputs, Docker/libvirt, Steam + gamemode, zram, `fwupd`. Both hosts use
+plain `vscode`: current unstable fixes the old ripgrep-path build issue.
 
 Kept laptop-specific, deliberately different from the framework:
 
@@ -76,9 +92,30 @@ Kept laptop-specific, deliberately different from the framework:
 |---|---|---|
 | GPU | `services.xserver.videoDrivers = [ "nvidia" ]`, PRIME power management, `cudaSupport` + cuda cache | none (Radeon 8060S) |
 | `system.stateVersion` | **23.11** (install release — never bump) | 26.05 (fresh install) |
-| kernel | nixpkgs default, so the NVIDIA module matches | `linuxPackages_latest` |
+| kernel | `linuxPackages_latest`, NVIDIA stable from the same kernel package set | `linuxPackages_latest` |
 | power | `powerManagement.enable`, powertop, zram 25%, `services.libinput` | `power-profiles-daemon`, zram 15% |
 | extra | `services.xserver.wacom` (stylus), touchpad | — |
+
+Both hosts follow `python3` rather than the old `python312` package and
+`nodejs_latest` rather than the default Node LTS package.
+
+### Wayland clipboard on both hosts
+
+`wl-clipboard` is installed system-wide for CLI/editor clipboard access, plus
+`xclip` for legacy XWayland clients. GNOME already manages the desktop clipboard;
+no extra clipboard daemon is needed. After rebuilding, in a terminal inside the
+Wayland session:
+
+```sh
+printf 'clipboard test' | wl-copy
+wl-paste
+```
+
+In terminals use **Ctrl+Shift+C / Ctrl+Shift+V**; ordinary GUI apps use
+**Ctrl+C / Ctrl+V**. In Neovim, `"+y` / `"+p` use the system clipboard; for
+all yanks/pastes, add `vim.opt.clipboard = "unnamedplus"` to your own config.
+Installing these helpers fixes missing CLI clipboard access, not arbitrary
+application-specific shortcut or clipboard bugs.
 
 ## Setting up the Framework Desktop
 
@@ -163,12 +200,8 @@ passwd                       # set nick's password
 fwupdmgr get-devices         # Framework BIOS/EC firmware updates via LVFS
 ```
 
-If the channel wasn't copied during install, add it now:
-
-```sh
-sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
-sudo nix-channel --update
-```
+No separate channel setup is needed when using `rebuild.sh`: it adds/updates
+root's unstable channel on every run, even if the installer did not copy one.
 
 ### 7. Sanity checks
 
@@ -216,24 +249,24 @@ bluetoothctl show
 - **Replace `hosts/framework/hardware-configuration.nix`** with the output of
   `nixos-generate-config` from the real machine (step 4). The tracked file is a
   template with placeholder UUIDs (an ESP on `/boot`, NVMe, AMD microcode);
-  `rebuild.sh` refuses to `switch`/`boot` while those placeholders are there.
+  `rebuild.sh` refuses to `switch`/`boot`/`test` or install while those
+  placeholders are there.
   The QEMU/Boxes test VM's generated file is kept as
   `hosts/framework/hardware-configuration.vm.nix` — copy it over the template
   when rebuilding the VM:
   `cp hosts/framework/hardware-configuration.vm.nix hosts/framework/hardware-configuration.nix`
-- `system.stateVersion` is `26.05` on the framework (the release the unstable
-  install ISO is on) and `23.11` on the laptop (its install release). It is not
-  a nixpkgs pin — don't bump it.
+- `system.stateVersion` remains `26.05` on the framework and `23.11` on the
+  laptop (the install releases recorded in these configs). It is not a nixpkgs
+  pin — don't bump it when upgrading packages.
 - Bootloader: `configuration.nix` asks for systemd-boot (correct on the real
   Framework, which is UEFI). `default.nix` additionally imports
   `bootloader-bios.nix` when `/sys/firmware/efi` is absent, which keeps GRUB on
   `/dev/vda` for BIOS installs instead of failing on systemd-boot.
-- `environment.extraOutputsToInstall` is forced to `[ "man" "info" ]`: with
-  this nixpkgs the `python3.12-doc` output fails to build (sphinx/docutils)
-  and is not in `cache.nixos.org`, which would break the whole system build.
-- `vscode` is wrapped in `overrideAttrs` (see the comment in
-  `configuration.nix`) because 1.144 moved its bundled ripgrep to
-  `@vscode/ripgrep-universal` while nixpkgs still patches the old path.
+- `environment.extraOutputsToInstall` is forced to `[ "man" "info" ]`: skip
+  large or uncached `doc` outputs, which previously broke builds with
+  `python3.12-doc` (sphinx/docutils).
+- Both hosts use unmodified `vscode` because current unstable fixes the old
+  bundled ripgrep-path issue, allowing the normal binary-cache build.
 - `microsoft-edge` is dropped: its build fails and is not in the binary cache.
 - Editor/multiplexer: `EDITOR`/`VISUAL`/`GIT_EDITOR` are set to `nvim`, and the
   `programs.nix-ld` library list carries what prebuilt apps (`herdr-app`)
@@ -254,8 +287,8 @@ bluetoothctl show
   `services.desktopManager.gnome`, `services.displayManager.gdm`,
   `services.pulseaudio`, `services.libinput`, `transmission_4-gtk`,
   `protonup-ng`, `libglvnd`. On an older channel those are `services.xserver.*` /
-  `transmission-gtk` / `protonup` / `libEGL` — so keep the channel current with
-  `sudo nix-channel --update`.
+  `transmission-gtk` / `protonup` / `libEGL` — both hosts' `rebuild.sh` scripts
+  keep the channel current automatically.
 - `hosts/desktop` and the top-level `configuration.nix` still use the old
   option names and removed packages; they need the same migration before they
   will evaluate.

@@ -1,10 +1,9 @@
 # Framework Desktop — full AMD (Ryzen AI Max / "Strix Halo", Radeon 8060S iGPU).
 # No NVIDIA, no CUDA: the dGPU sections of the other hosts are intentionally absent.
 #
-# Strix Halo (gfx1151) needs kernel >= 6.15 and Mesa >= 25.1, so keep the
-# channel current (`sudo nix-channel --update`) or use the pinned
-# hosts/framework/nixpkgs.nix; an old channel cannot drive the GPU or the
-# MT7925 Wi-Fi.
+# Strix Halo (gfx1151) needs kernel >= 6.15 and Mesa >= 25.1. Like the laptop,
+# rebuild.sh refreshes nixos-unstable on every build; an old channel cannot
+# drive the GPU or the MT7925 Wi-Fi.
 
 { config, pkgs, lib, ... }:
 
@@ -13,6 +12,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../common/dev-terminal.nix
+      ../common/cli.nix
       # NOTE: ./vm.nix (GNOME Boxes/QEMU clipboard, shared folders, USB) is
       # intentionally *not* imported now that this runs on bare metal. Add the
       # line back if you boot this config in a VM:
@@ -24,8 +24,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 10;
 
-  # Newest mainline kernel from the pinned nixpkgs: required for the
-  # Ryzen AI Max GPU, MT7925 Wi-Fi and the 5GbE NIC.
+  # Latest packaged kernel for the Ryzen AI Max GPU, MT7925 Wi-Fi and
+  # the 5GbE NIC (takes effect after reboot).
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # amd-pstate in active mode = best frequency scaling on Zen 5.
@@ -64,7 +64,7 @@
     enable = true;
     enable32Bit = true; # 32-bit Vulkan/OpenGL for Steam & Wine
     # ROCm for the 8060S (gfx1151) is available but very large; uncomment if
-    # you actually want it (also uncomment the render/video groups below):
+    # you actually want it (render/video groups are already included below):
     # extraPackages = with pkgs; [ rocmPackages.clr.icd ];
   };
 
@@ -147,7 +147,7 @@
       libvirt
       libreoffice
       ripgrep
-      nodejs
+      nodejs_latest
       fd
       alacritty
       unzip
@@ -162,11 +162,10 @@
       tor-browser
       zellij
       tmux
-      wl-clipboard
       helix
       bat
       texliveFull
-      python312
+      python3
       uv
       yt-dlg
       distrobox
@@ -199,30 +198,24 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # NixOS defaults this to [ "man" "info" "doc" ]. With this nixpkgs pin the
-  # python3.12 *doc* output does not build (sphinx 8 vs docutils 0.22 TypeError)
-  # and is not in cache.nixos.org, which fails the whole system build. Keep
-  # man/info pages, skip the doc outputs.
+  # Keep man/info pages, but skip large or uncached documentation outputs.
+  # These previously broke the system build with python3.12-doc.
   environment.extraOutputsToInstall = lib.mkForce [ "man" "info" ];
 
   # ------------------------------------------------------- system packages --
   environment.systemPackages = with pkgs; [
+    trunk # Rust/WASM web application bundler
     vim
     zsh-fzf-history-search
-    # vscode 1.144 ships its bundled ripgrep at
-    # node_modules.asar.unpacked/@vscode/ripgrep-universal/, but the nixpkgs
-    # expression still rm/chmod's .../node_modules/@vscode/ripgrep/bin/rg and
-    # fails (nothing in cache). Pre-create the path so the package's own
-    # `rm` + `ln -s ${ripgrep}/bin/rg` succeeds.
-    (vscode.overrideAttrs (old: {
-      prePatch = (old.prePatch or "") + ''
-        mkdir -p resources/app/node_modules/@vscode/ripgrep/bin
-        touch resources/app/node_modules/@vscode/ripgrep/bin/rg
-      '';
-    }))
+    # Current unstable already fixes the bundled ripgrep path; use the
+    # unmodified package so we can use its binary-cache build.
+    vscode
     protonup-ng
     lutris
     xdg-utils
+    # GNOME handles the clipboard; these expose it to CLI tools and editors.
+    wl-clipboard # wl-copy / wl-paste in Wayland
+    xclip        # legacy clients running through XWayland
     cmake
     gnumake
     libvterm
@@ -233,13 +226,23 @@
     pkg-config
   ];
 
+  # --------------------------------------------------------------- git -----
+  # Default commit identity; user/repository Git config can override this.
+  programs.git = {
+    enable = true;
+    config.user = {
+      name = "Nick Lamprinidis";
+      email = "nlamprinidis@eagle.org";
+    };
+  };
+
   # ------------------------------------------------------------ services ----
   services.openssh.enable = true;
 
   # --------------------------------------------------------- state version --
   # This value determines the NixOS release from which the default settings for
   # stateful data were taken. Leave it at the release of the first install.
-  # 26.05 = current nixos-unstable, which is what the install ISO/README use.
+  # 26.05 is this host's install release, not a package-version pin.
   system.stateVersion = "26.05";
 
   # --------------------------------------------------------------- shell ----

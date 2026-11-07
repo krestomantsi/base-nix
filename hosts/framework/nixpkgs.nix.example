@@ -1,7 +1,9 @@
-# Optional: pin nixpkgs with a tarball (no lockfile).
+# Manual-only example: pin nixpkgs with a tarball (no lockfile).
 #
-# Rename this file to `nixpkgs.nix` and fill in REV and SHA256. `rebuild.sh`
-# picks it up automatically and passes it to nixos-rebuild via -I nixpkgs=...
+# Normal laptop/framework rebuilds IGNORE this file and any `nixpkgs.nix` copy:
+# they always refresh nixos-unstable. Keep this example only for manual debugging.
+# To use it manually, fill in REV and SHA256, evaluate the expression, then pass
+# its store path to a direct nixos-rebuild invocation with -I nixpkgs=<path>.
 #
 #   1. pick a commit on the unstable branch:
 #        git ls-remote https://github.com/NixOS/nixpkgs nixos-unstable

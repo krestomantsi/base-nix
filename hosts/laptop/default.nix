@@ -12,8 +12,9 @@
 #   sudo NIXOS_CONFIG=~/base-nix/hosts/laptop/configuration.nix \
 #     nixos-install --root /mnt
 #
-# nixpkgs comes from <nixpkgs> (root's channel) or from ./nixpkgs.nix if you
-# copy nixpkgs.nix.example there; rebuild.sh handles both.
+# nixpkgs comes from <nixpkgs>. Use rebuild.sh to refresh root's channel to
+# nixos-unstable and pass its resolved store path explicitly; a manual rebuild
+# does not update the channel. Laptop rebuilds deliberately ignore tarball pins.
 #
 # The laptop is always UEFI, so unlike hosts/framework/default.nix there is no
 # BIOS fallback module here.

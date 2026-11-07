@@ -12,9 +12,9 @@ HOST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG="${1:-/tmp/nixos-build.log}"
 
 if [[ "${SKIP_BUILD:-0}" != "1" ]]; then
-  echo "==> nixos-rebuild boot -f $HOST_DIR/default.nix"
+  echo "==> $HOST_DIR/rebuild.sh build (fresh unstable; no activation)"
   echo "==> full log: $LOG"
-  sudo nixos-rebuild boot -f "$HOST_DIR/default.nix" >"$LOG" 2>&1
+  "$HOST_DIR/rebuild.sh" build >"$LOG" 2>&1
   echo "==> exit status: $?"
 fi
 
