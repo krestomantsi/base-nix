@@ -86,7 +86,7 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
-  fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono ];
+  fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono cascadia-code ];
 
   services.xserver.xkb = {
     layout = "us";

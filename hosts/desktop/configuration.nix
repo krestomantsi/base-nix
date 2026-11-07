@@ -60,7 +60,7 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
   # fonts
-  fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono ];
+  fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono cascadia-code ];
   # i3
   #  services.xserver = {
   #  enable = true;
