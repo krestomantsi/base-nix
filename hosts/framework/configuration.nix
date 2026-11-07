@@ -174,6 +174,7 @@
       rust-analyzer
       bacon
       cargo-wizard
+      git-graph
 
       # AMD GPU / monitoring
       amdgpu_top
