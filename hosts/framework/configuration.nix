@@ -140,7 +140,6 @@
       kitty
       eza
       telegram-desktop
-      discord
       fzf
       starship
       lazygit
