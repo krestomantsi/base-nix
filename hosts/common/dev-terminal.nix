@@ -31,9 +31,15 @@ let
     exec ${pkgs.nix}/bin/nix-shell "$shellFile" --run "$command"
   '';
 
+  # Herdr's zstd-sys build probes for system zstd through pkg-config.
+  # Keep this dependency scoped to Herdr; don't change the Rust dev shell/toolchain.
+  herdrDesktop = pkgs.herdr-desktop.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.zstd ];
+  });
+
   herdrApp = pkgs.symlinkJoin {
     name = "herdr-app-dev";
-    paths = [ pkgs.herdr-desktop ];
+    paths = [ herdrDesktop ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram "$out/bin/herdr-app" --set SHELL ${devShell}
