@@ -20,6 +20,7 @@
       ./hardware-configuration.nix
       ../common/dev-terminal.nix
       ../common/cli.nix
+      ../common/flatpak.nix
     ];
 
   # --------------------------------------------------------------- boot -----
@@ -231,7 +232,6 @@
 
   # ------------------------------------------------------- system packages --
   environment.systemPackages = with pkgs; [
-    trunk # Rust/WASM web application bundler
     vim
     zsh-fzf-history-search
     # Current unstable already fixes the bundled ripgrep path; use the

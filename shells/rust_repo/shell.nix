@@ -6,7 +6,7 @@
 #   - intel-mkl-src / ndarray-linalg[blas]  -> MKLROOT points at nixpkgs' MKL
 #   - netcdf + hidefix(netcdf)              -> libnetcdf + hdf5 + pkg-config
 #   - sea-orm (sqlx-sqlite, sqlx-postgres)  -> bundled sqlite, no libpq needed
-#   - 4 x Trunk.toml web projects           -> trunk + wasm32 target
+#   - WebAssembly frontend projects         -> wasm-bindgen-cli + binaryen
 #   - just / bacon / cargo-wizard           -> task runner + dev loop
 #   - uv + python                           -> pyproject.toml
 #
@@ -45,7 +45,6 @@ pkgs.mkShell {
     cargo-wizard
     sea-orm-cli
     # wasm frontends
-    trunk
     wasm-bindgen-cli
     binaryen
     # python side

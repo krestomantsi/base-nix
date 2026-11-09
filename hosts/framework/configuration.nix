@@ -13,6 +13,7 @@
       ./hardware-configuration.nix
       ../common/dev-terminal.nix
       ../common/cli.nix
+      ../common/flatpak.nix
       # NOTE: ./vm.nix (GNOME Boxes/QEMU clipboard, shared folders, USB) is
       # intentionally *not* imported now that this runs on bare metal. Add the
       # line back if you boot this config in a VM:
