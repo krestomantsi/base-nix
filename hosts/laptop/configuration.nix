@@ -161,6 +161,7 @@
       tree-sitter
       ranger
       git
+      gh
       htop
       kitty
       eza
@@ -221,6 +222,19 @@
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
+  # These Rust packages' zstd-sys builds probe for system zstd through pkg-config.
+  # nixpkgs currently omits zstd from both packages' build inputs.
+  nixpkgs.overlays = [
+    (final: prev: {
+      trunk = prev.trunk.overrideAttrs (old: {
+        buildInputs = (old.buildInputs or [ ]) ++ [ final.zstd ];
+      });
+      herdr-desktop = prev.herdr-desktop.overrideAttrs (old: {
+        buildInputs = (old.buildInputs or [ ]) ++ [ final.zstd ];
+      });
+    })
+  ];
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -250,7 +264,6 @@
     rustup
     zlib
     pkg-config
-    gh
     git-graph
   ];
 
