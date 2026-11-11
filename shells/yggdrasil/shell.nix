@@ -46,6 +46,11 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
+    # uv's downloaded CPython and binary wheels need Nix runtime libraries,
+    # and must not inherit the host's Python 3.12 site-packages via PYTHONPATH.
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.libGL pkgs.libx11 ]}:''${LD_LIBRARY_PATH:-}"
+    unset PYTHONPATH
+
     echo "yggdrasil shell: $(odin version)"
     echo "build: ./build_server.sh   (sqlite amalgamation + odin build)"
     echo "python: uv sync && uv run python ..."

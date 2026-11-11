@@ -82,7 +82,10 @@ nix-shell ~/base-nix/shells/pi/shell.nix --run "pi --version"
 Same shape as the framework host. Same 26.05 option names, `nix-ld` libraries
 for prebuilt GUI apps (herdr-app), `EDITOR`/`VISUAL`/`GIT_EDITOR=nvim`, skipped
 `doc` outputs, Docker/libvirt, Steam + gamemode, zram, `fwupd`. Both hosts use
-plain `vscode`: current unstable fixes the old ripgrep-path build issue.
+a shared VS Code wrapper adds `rustup`/`cargo`, `odin`/`ols` and `uv` to Code's
+`PATH` for GUI launches, extensions and integrated terminals (without running
+Electron inside `nix-shell`). The underlying `vscode` stays unmodified and uses
+the binary cache.
 
 Kept laptop-specific, deliberately different from the framework:
 
@@ -263,8 +266,9 @@ bluetoothctl show
 - `environment.extraOutputsToInstall` is forced to `[ "man" "info" ]`: skip
   large or uncached `doc` outputs, which previously broke builds with
   `python3.12-doc` (sphinx/docutils).
-- Both hosts use unmodified `vscode` because current unstable fixes the old
-  bundled ripgrep-path issue, allowing the normal binary-cache build.
+- Both hosts use the shared `hosts/common/dev-terminal.nix` VS Code wrapper:
+  the underlying `vscode` stays unmodified (cached on current unstable), while
+  `code` gets the same Rust/Odin/uv binaries on `PATH` as Herdr's dev shell.
 - `microsoft-edge` is dropped: its build fails and is not in the binary cache.
 - Editor/multiplexer: `EDITOR`/`VISUAL`/`GIT_EDITOR` are set to `nvim`, and the
   `programs.nix-ld` library list carries what prebuilt apps (`herdr-app`)

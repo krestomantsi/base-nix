@@ -234,9 +234,7 @@
   environment.systemPackages = with pkgs; [
     vim
     zsh-fzf-history-search
-    # Current unstable already fixes the bundled ripgrep path; use the
-    # unmodified package so we can use its binary-cache build.
-    vscode
+    # VS Code with Rust/Odin/uv on PATH is installed by common/dev-terminal.nix.
     protonup-ng
     lutris
     xdg-utils

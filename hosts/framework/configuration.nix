@@ -37,6 +37,14 @@
   # ------------------------------------------------------------ network -----
   networking.networkmanager.enable = true;
 
+  # ------------------------------------------------------------- storage ----
+  # Fixed data NVMe: mount independently of GNOME's login-time automount.
+  fileSystems."/mnt/fakedrive" = {
+    device = "/dev/disk/by-uuid/87596b17-e730-4390-8625-70704a893461";
+    fsType = "ext4";
+    options = [ "nofail" "x-systemd.device-timeout=10s" ];
+  };
+
   # --------------------------------------------------------------- time -----
   time.timeZone = "Europe/Athens";
 
@@ -205,9 +213,7 @@
   environment.systemPackages = with pkgs; [
     vim
     zsh-fzf-history-search
-    # Current unstable already fixes the bundled ripgrep path; use the
-    # unmodified package so we can use its binary-cache build.
-    vscode
+    # VS Code with Rust/Odin/uv on PATH is installed by common/dev-terminal.nix.
     protonup-ng
     lutris
     xdg-utils

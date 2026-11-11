@@ -45,6 +45,18 @@ let
       wrapProgram "$out/bin/herdr-app" --set SHELL ${devShell}
     '';
   };
+
+  # Give VS Code (including GUI launches, extensions and its terminal) the
+  # same compiler/manager binaries as Herdr's dev shell, without running
+  # Electron inside nix-shell or changing the environment of other apps.
+  vscodeDev = pkgs.symlinkJoin {
+    name = "vscode-dev";
+    paths = [ pkgs.vscode ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/code" --prefix PATH : ${lib.makeBinPath (with pkgs; [ rustup odin ols uv ])}
+    '';
+  };
 in
 {
   programs.zoxide = {
@@ -53,5 +65,5 @@ in
     enableZshIntegration = true;
   };
 
-  environment.systemPackages = [ zoxideNu herdrApp pkgs.herdr-core ];
+  environment.systemPackages = [ zoxideNu herdrApp pkgs.herdr-core vscodeDev ];
 }

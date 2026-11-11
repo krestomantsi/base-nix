@@ -12,9 +12,16 @@
   interactive Nushell, keeping the directory selected in Herdr. Agent `-c`
   commands use Bash inside the same dev environment for POSIX compatibility.
   Other terminal apps and your default login shell are unchanged.
+- VS Code's `code` launcher is wrapped with `rustup` (including its `cargo`
+  proxy), `odin`, `ols` and `uv` on `PATH`. This works for GNOME launches,
+  extensions and integrated terminals on both hosts without putting Electron
+  inside `nix-shell`. Install a Rust toolchain with `rustup default stable` if
+  you have not already; for the full build/linker environment, enter
+  `nix-shell ~/base-nix/shells/dev/shell.nix` in a project terminal.
 
 Apply on each machine with its `hosts/<host>/rebuild.sh`, then open a new
-terminal for zoxide. Quit any already-running Herdr app before relaunching it.
+terminal for zoxide. Quit any already-running VS Code and Herdr apps before
+relaunching them (existing Code windows keep their old environment).
 Existing persistent core sessions/terminals may retain their old shell or
 configuration; stop/restart those sessions when switching to this setup.
 Remote terminals use the remote machine's environment and are not changed.
