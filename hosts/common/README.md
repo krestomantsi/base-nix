@@ -12,12 +12,16 @@
   interactive Nushell, keeping the directory selected in Herdr. Agent `-c`
   commands use Bash inside the same dev environment for POSIX compatibility.
   Other terminal apps and your default login shell are unchanged.
-- VS Code's `code` launcher is wrapped with `rustup` (including its `cargo`
-  proxy), `odin`, `ols` and `uv` on `PATH`. This works for GNOME launches,
-  extensions and integrated terminals on both hosts without putting Electron
-  inside `nix-shell`. Install a Rust toolchain with `rustup default stable` if
-  you have not already; for the full build/linker environment, enter
-  `nix-shell ~/base-nix/shells/dev/shell.nix` in a project terminal.
+- VS Code's `code` launcher, integrated terminals and tasks receive the full
+  `shells/dev/shell.nix` environment (`rustup`/`cargo`, `odin`, `ols`, `just`,
+  `uv`, `python312`, `gcc`/`cc`, `binutils`, `pkg-config`, `cmake`, `gnumake`,
+  and the `NIX_CFLAGS_COMPILE`, `NIX_LDFLAGS`, `PKG_CONFIG_PATH` and
+  `LD_LIBRARY_PATH` flags for `raylib`, `raygui`, `curl`, `sqlite`, `openssl`,
+  etc.) via `/etc/vscode-dev-env.sh` without running Electron inside a
+  transient `nix-shell` `TMPDIR`. It also exports `__ETC_PROFILE_DONE=1` and
+  `__NIXOS_SET_ENVIRONMENT_DONE=1` so interactive Bash/Zsh shells inside VS Code
+  do not reset `PATH` when the host login shell is Nushell. Install a Rust
+  toolchain with `rustup default stable` if you have not already.
 
 Apply on each machine with its `hosts/<host>/rebuild.sh`, then open a new
 terminal for zoxide. Quit any already-running VS Code and Herdr apps before

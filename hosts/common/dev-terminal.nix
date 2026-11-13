@@ -46,15 +46,72 @@ let
     '';
   };
 
-  # Give VS Code (including GUI launches, extensions and its terminal) the
-  # same compiler/manager binaries as Herdr's dev shell, without running
-  # Electron inside nix-shell or changing the environment of other apps.
+  # Precompute the full compiler, linker, pkg-config and tool environment from
+  # shells/dev/shell.nix (odin, ols, just, rustup/cargo, uv, gcc, binutils,
+  # raylib, raygui, curl, sqlite, openssl, etc.) so VS Code, its extensions,
+  # integrated terminals and tasks see the nix-shell without running Electron
+  # inside a transient nix-shell TMPDIR.
+  devShellDrv = import ../../shells/dev/shell.nix { inherit pkgs; };
+
+  vscodeDevEnv = pkgs.runCommand "vscode-dev-env.sh" {
+    inherit (devShellDrv) nativeBuildInputs buildInputs;
+  } ''
+    cleanPath=""
+    IFS=: read -ra dirs <<< "${pkgs.bashInteractive}/bin:$PATH"
+    for d in "''${dirs[@]}"; do
+      [[ -z "$d" || "$d" == "${pkgs.bashNonInteractive}/bin" ]] && continue
+      case ":$cleanPath:" in
+        *":$d:"*) ;;
+        *) cleanPath="''${cleanPath:+$cleanPath:}$d" ;;
+      esac
+    done
+
+    cleanLdFlags="''${NIX_LDFLAGS#-rpath $out/lib }"
+    cleanLdFlags="''${cleanLdFlags#-rpath $out/lib}"
+    devLibPath="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.libGL pkgs.libx11 ]}"
+
+    {
+      echo "export __ETC_PROFILE_DONE=1"
+      echo "export __NIXOS_SET_ENVIRONMENT_DONE=1"
+      echo "export IN_NIX_SHELL=impure"
+      printf 'devShellPath=%q\n' "$cleanPath"
+      echo 'case ":''${PATH:-}:" in'
+      echo '  *":$devShellPath:"*) ;;'
+      echo '  *) export PATH="$devShellPath''${PATH:+:$PATH}" ;;'
+      echo 'esac'
+      echo 'unset devShellPath'
+      for var in \
+        AR AS CC CXX LD NM OBJCOPY OBJDUMP RANLIB READELF SIZE STRINGS STRIP \
+        PKG_CONFIG PKG_CONFIG_PATH \
+        CMAKE_INCLUDE_PATH CMAKE_LIBRARY_PATH NIXPKGS_CMAKE_PREFIX_PATH \
+        NIX_CC NIX_BINTOOLS NIX_CFLAGS_COMPILE \
+        "''${!NIX_CC_WRAPPER_TARGET_HOST_@}" \
+        "''${!NIX_BINTOOLS_WRAPPER_TARGET_HOST_@}" \
+        "''${!NIX_PKG_CONFIG_WRAPPER_TARGET_HOST_@}"; do
+        if [[ -n "''${!var:-}" ]]; then
+          printf "export %s=%q\n" "$var" "''${!var}"
+        fi
+      done
+      printf "export NIX_LDFLAGS=%q\n" "$cleanLdFlags"
+      echo 'export CARGO_HOME="''${CARGO_HOME:-$HOME/.cargo}"'
+      echo 'export RUSTUP_HOME="''${RUSTUP_HOME:-$HOME/.rustup}"'
+      printf 'devLibPath=%q\n' "$devLibPath"
+      echo 'case ":''${LD_LIBRARY_PATH:-}:" in'
+      echo '  *":$devLibPath:"*) ;;'
+      echo '  *) export LD_LIBRARY_PATH="$devLibPath''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ;;'
+      echo 'esac'
+      echo 'unset devLibPath'
+    } > "$out"
+  '';
+
   vscodeDev = pkgs.symlinkJoin {
     name = "vscode-dev";
     paths = [ pkgs.vscode ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram "$out/bin/code" --prefix PATH : ${lib.makeBinPath (with pkgs; [ rustup odin ols uv ])}
+      wrapProgram "$out/bin/code" \
+        --run "if [[ -r /etc/vscode-dev-env.sh ]]; then source /etc/vscode-dev-env.sh; else source ${vscodeDevEnv}; fi" \
+        --set BASH_ENV "/etc/vscode-dev-env.sh"
     '';
   };
 in
@@ -64,6 +121,14 @@ in
     enableBashIntegration = true;
     enableZshIntegration = true;
   };
+
+  environment.etc."vscode-dev-env.sh".source = vscodeDevEnv;
+
+  programs.bash.interactiveShellInit = ''
+    if [[ -n "''${VSCODE_INJECTION:-}" || "''${TERM_PROGRAM:-}" == "vscode" ]] && [[ -r /etc/vscode-dev-env.sh ]]; then
+      source /etc/vscode-dev-env.sh
+    fi
+  '';
 
   environment.systemPackages = [ zoxideNu herdrApp pkgs.herdr-core vscodeDev ];
 }

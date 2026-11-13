@@ -73,10 +73,12 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
+    export __ETC_PROFILE_DONE=1
+    export __NIXOS_SET_ENVIRONMENT_DONE=1
     export CARGO_HOME="''${CARGO_HOME:-$HOME/.cargo}"
     export RUSTUP_HOME="''${RUSTUP_HOME:-$HOME/.rustup}"
     # raylib in nixpkgs is X11-only; it runs through XWayland on GNOME Wayland.
-    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.libGL pkgs.libx11 ]}:''${LD_LIBRARY_PATH:-}"
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.libGL pkgs.libx11 ]}:''${LD_LIBRARY_PATH:-}"
 
     echo "odin-rust-uv shell"
     echo "  odin:  $(odin version)"
