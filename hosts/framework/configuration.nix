@@ -158,18 +158,15 @@
       ripgrep
       nodejs_latest
       fd
-      alacritty
       unzip
       transmission_4-gtk
       xournalpp
       vlc
       typst
       zathura
-      yazi
       nushell
       docker
       tor-browser
-      zellij
       tmux
       helix
       bat

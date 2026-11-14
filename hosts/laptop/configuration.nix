@@ -182,19 +182,14 @@
       vlc
       typst
       zathura
-      joshuto
       nushell
       docker
-      poetry
       tor-browser
-      zed-editor
-      zellij
       tmux
       helix
       unixtools.watch
       bat
       texliveFull
-      yazi
       python3
       uv
       distrobox
