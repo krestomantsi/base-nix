@@ -153,6 +153,8 @@
       gnomeExtensions.caffeine
       gnomeExtensions.blur-my-shell
       gnomeExtensions.logo-menu
+      gnomeExtensions.paperwm
+ 
 
       # general
       firefox-bin
