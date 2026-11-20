@@ -68,7 +68,8 @@ let
 
     cleanLdFlags="''${NIX_LDFLAGS#-rpath $out/lib }"
     cleanLdFlags="''${cleanLdFlags#-rpath $out/lib}"
-    devLibPath="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.libGL pkgs.libx11 ]}"
+    # The Copilot agent runtime dlopens OpenSSL for its TLS/proxy handling.
+    devLibPath="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.openssl pkgs.libGL pkgs.libx11 ]}"
 
     {
       echo "export __ETC_PROFILE_DONE=1"
