@@ -11,8 +11,9 @@ No flake files, no lockfile.
 |---|---|---|
 | `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `~/base-nix/hosts/framework/rebuild.sh` |
 | `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `~/base-nix/hosts/laptop/rebuild.sh` |
+| `raspberry` | `hosts/raspberry/` — Raspberry Pi 5 (`aarch64-linux`), minimal Sway + app host (`yggdrasil`, `rust_repo`, Tailscale) | `~/base-nix/hosts/raspberry/rebuild.sh` |
 
-Both remaining host configurations import `hosts/common/cli.nix`: it installs
+All host configurations import `hosts/common/cli.nix`: it installs
 `pi-coding-agent` system-wide (run `pi`) and disables Nushell's welcome banner,
 including its first-commit age and startup-time display. Older channels without
 pi use the same pinned nixpkgs revision as `shells/pi/shell.nix`.
@@ -31,6 +32,9 @@ so it wants a *module* → `configuration.nix`.
 
 # on the framework: same policy (replace its hardware template first)
 ~/base-nix/hosts/framework/rebuild.sh
+
+# on the raspberry pi 5: same policy (replace its hardware template first)
+~/base-nix/hosts/raspberry/rebuild.sh
 
 # or by hand, using an already-updated root channel
 sudo nixos-rebuild switch -f ~/base-nix/hosts/framework/default.nix \
@@ -63,6 +67,8 @@ or placeholder disk UUIDs. Builds/dry runs can still evaluate a template.
 - `hosts/framework/services/yggdrasil.nix` — declarative yggdrasil service + backup timer (see below; not imported yet).
 - `hosts/framework/vm.nix` — SPICE/QEMU guest integration (clipboard, shared folders, USB) for testing in GNOME Boxes; not imported on bare metal.
 - `hosts/framework/diagnose.sh` — build fresh unstable through `rebuild.sh build` (no activation/boot changes), print only the failing derivation(s), keyword matches and `df -h / /nix`.
+- `hosts/raspberry/bootloader-extlinux.nix` — imported by `hosts/raspberry/default.nix` **only when `/sys/firmware/efi` is missing**; switches from `systemd-boot` (Pi 5 UEFI) to `generic-extlinux-compatible` (U-Boot / standard NixOS ARM64 SD image).
+- `hosts/raspberry/services/yggdrasil.nix` — declarative `yggdrasil` service + daily backup timer imported by `hosts/raspberry/configuration.nix` (with `ConditionPathExists` so first boot succeeds before the binary is built).
 - `shells/dev/shell.nix` — **one dev shell with Odin (`odin` + `ols`), Rust (`rustup`) and Python (`uv`)**, plus `nvim`/`tree-sitter`/`ripgrep`/`fd` for the herdr-app + nvim workflow.
 - `shells/rust_repo/shell.nix`, `shells/yggdrasil/shell.nix` — dev shells, copy/symlink into the repos.
 - `shells/pi/shell.nix` — a shell with a current `pi`, independent of the channel (pinned tarball).
@@ -213,6 +219,59 @@ sensors                           # amdgpu temps
 ip -br a                          # 5GbE + Wi-Fi 7
 bluetoothctl show
 ```
+
+## Setting up the Raspberry Pi 5 (`raspberry`)
+
+Minimal ARM64 (`aarch64-linux`) app host for `~/yggdrasil` and `~/rust_repo`:
+no desktop/media/browser/gaming GUI packages, no X11/XWayland, no PipeWire or
+Bluetooth — only `greetd`/`tuigreet` + `sway` (`foot`, `wmenu`, `i3status`),
+Rust (`rustup` + `trunk`/`wasm-bindgen-cli`/`binaryen` + native libs), Odin
+(`odin` + `ols` + `gcc`/`binutils`/`curl`/`sqlite`), Docker, Tailscale, SSH,
+and the declarative `yggdrasil` service/backup timer.
+
+### 1. Boot & hardware config
+
+- **UEFI (`rpi5-uefi` / EDK2):** recommended for NVMe/USB/SD installs; uses
+  `systemd-boot` (`canTouchEfiVariables = false`).
+- **U-Boot / NixOS ARM64 SD image:** if `/sys/firmware/efi` is absent,
+  `hosts/raspberry/default.nix` automatically imports
+  `hosts/raspberry/bootloader-extlinux.nix` (`generic-extlinux-compatible`).
+
+Replace the placeholder `hosts/raspberry/hardware-configuration.nix` on the Pi
+before switching or installing:
+
+```sh
+sudo nixos-generate-config --show-hardware-config > /tmp/hw.nix
+cp /tmp/hw.nix ~/base-nix/hosts/raspberry/hardware-configuration.nix
+~/base-nix/hosts/raspberry/rebuild.sh
+```
+
+### 2. First boot & services
+
+```sh
+sudo tailscale up
+rustup toolchain install stable && rustup default stable
+rustup target add wasm32-unknown-unknown
+```
+
+- **Firewall**: TCP `22` (SSH), `5151` (`rust_repo`), `5152` (`yggdrasil`),
+  plus `tailscale0` trusted.
+- **Sway keys**: `Mod+Enter` opens `foot`, `Mod+d` opens `wmenu`,
+  `Mod+Shift+q` closes a window, `Mod+Shift+e` exits Sway.
+- **yggdrasil**: `hosts/raspberry/services/yggdrasil.nix` is already imported.
+  Build the binary inside `shells/yggdrasil/shell.nix` so Odin links `curl`,
+  `raylib`, and compiled `raygui`, then configure `~/.config/yggdrasil/server.env`
+  (e.g. `YGGDRASIL_BIND=0.0.0.0`, `YGGDRASIL_PORT=5152`, `YGGDRASIL_THREADS=4`):
+
+  ```sh
+  nix-shell ~/base-nix/shells/yggdrasil/shell.nix --run 'cd ~/yggdrasil && ./build_server.sh'
+  sudo systemctl restart yggdrasil
+  ```
+
+- **rust_repo**: Docker is enabled (`~/rust_repo/docker_setup.sh`). Note that
+  `~/rust_repo/Cargo.toml` currently enables `ndarray-linalg` with `intel-mkl`,
+  which is x86_64-only; native ARM64 builds on the Pi 5 will need OpenBLAS (or
+  a conditional feature) in `rust_repo`.
 
 ## Deploying apps on the host
 
