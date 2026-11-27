@@ -9,7 +9,7 @@ No flake files, no lockfile.
 
 | Host | Config | Rebuild |
 |---|---|---|
-| `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo) | `~/base-nix/hosts/framework/rebuild.sh` |
+| `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo), COSMIC | `~/base-nix/hosts/framework/rebuild.sh` |
 | `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `~/base-nix/hosts/laptop/rebuild.sh` |
 | `raspberry` | `hosts/raspberry/` — Raspberry Pi 5 (`aarch64-linux`), minimal Sway + app host (`yggdrasil`, `rust_repo`, Tailscale) | `~/base-nix/hosts/raspberry/rebuild.sh` |
 
@@ -109,8 +109,9 @@ Both hosts follow `python3` rather than the old `python312` package and
 ### Wayland clipboard on both hosts
 
 `wl-clipboard` is installed system-wide for CLI/editor clipboard access, plus
-`xclip` for legacy XWayland clients. GNOME already manages the desktop clipboard;
-no extra clipboard daemon is needed. After rebuilding, in a terminal inside the
+`xclip` for legacy XWayland clients. COSMIC on the Framework and GNOME on the
+laptop manage their desktop clipboards; no extra clipboard daemon is needed.
+After rebuilding, in a terminal inside the
 Wayland session:
 
 ```sh
@@ -137,7 +138,7 @@ application-specific shortcut or clipboard bugs.
 
 ### 2. Installer USB
 
-Download the **NixOS unstable (GNOME or minimal) ISO** — older release ISO
+Download the **NixOS unstable (COSMIC or minimal) ISO** — older release ISO
 kernels cannot drive the Radeon 8060S / MT7925 reliably:
 
 ```sh
@@ -344,9 +345,11 @@ rustup target add wasm32-unknown-unknown
 - ROCm is commented out in `hardware.graphics.extraPackages` — gfx1151 works
   with recent ROCm but the closure is huge. Add `"render"`/`"video"` to the
   user's `extraGroups` when enabling it (already done in the framework host).
-- `hosts/framework` and `hosts/laptop` target **current unstable (26.05+)**:
-  `services.desktopManager.gnome`, `services.displayManager.gdm`,
-  `services.pulseaudio`, `services.libinput`, `transmission_4-gtk`,
-  `protonup-ng`, `libglvnd`. On an older channel those are `services.xserver.*` /
-  `transmission-gtk` / `protonup` / `libEGL` — both hosts' `rebuild.sh` scripts
-  keep the channel current automatically.
+- `hosts/framework` and `hosts/laptop` target **current unstable (26.05+)**.
+  Framework uses `services.desktopManager.cosmic` and
+  `services.displayManager.cosmic-greeter`; laptop uses
+  `services.desktopManager.gnome` and `services.displayManager.gdm`. Both use
+  current options/packages such as `services.pulseaudio`, `services.libinput`,
+  `transmission_4-gtk`, `protonup-ng` and `libglvnd`. On an older channel those
+  are `services.xserver.*` / `transmission-gtk` / `protonup` / `libEGL` — both
+  hosts' `rebuild.sh` scripts keep the channel current automatically.

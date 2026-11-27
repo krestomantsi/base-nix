@@ -11,11 +11,14 @@
 #   - pyproject.toml (cartopy, PyQt6, ...)   -> uv (nix-ld makes uv's CPython work)
 #   - justfile                               -> just
 #
-# raylib in nixpkgs is X11-only, so the GUI runs through XWayland on GNOME
-# Wayland. That works because the host sets services.xserver.enable = true.
+# raylib in nixpkgs is X11-only, so the GUI runs through XWayland on COSMIC
+# or GNOME Wayland. That works because the host sets services.xserver.enable = true.
 
 { pkgs ? import <nixpkgs> {} }:
 
+let
+  odinSystemRaylib = import ../common/odin-system-raylib.nix { inherit pkgs; };
+in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     pkg-config
@@ -25,7 +28,7 @@ pkgs.mkShell {
 
   buildInputs = with pkgs; [
     # compiler + language tooling
-    odin
+    odinSystemRaylib
     just
     sqlite
     # linked by the vendored odin packages

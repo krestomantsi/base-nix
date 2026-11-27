@@ -7,7 +7,7 @@
 # One shell with all three toolchains, so a repo that mixes Odin (with an
 # editor LSP), Rust and a uv-managed Python side just works:
 #
-#   odin / ols              -> compiler + language server (dev-2026-05)
+#   odin / ols              -> compiler + language server from nixpkgs
 #   rustup                  -> cargo/rustc; install the toolchain once:
 #                              rustup toolchain install stable
 #                              rustup default stable
@@ -24,6 +24,9 @@
 
 { pkgs ? import <nixpkgs> { } }:
 
+let
+  odinSystemRaylib = import ../common/odin-system-raylib.nix { inherit pkgs; };
+in
 pkgs.mkShell {
   name = "odin-rust-uv";
 
@@ -37,7 +40,7 @@ pkgs.mkShell {
 
   buildInputs = with pkgs; [
     # ---- odin ----
-    odin
+    odinSystemRaylib
     ols
     just
 
@@ -77,7 +80,7 @@ pkgs.mkShell {
     export __NIXOS_SET_ENVIRONMENT_DONE=1
     export CARGO_HOME="''${CARGO_HOME:-$HOME/.cargo}"
     export RUSTUP_HOME="''${RUSTUP_HOME:-$HOME/.rustup}"
-    # raylib in nixpkgs is X11-only; it runs through XWayland on GNOME Wayland.
+    # raylib in nixpkgs is X11-only; it runs through XWayland on COSMIC/GNOME Wayland.
     export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.libGL pkgs.libx11 ]}:''${LD_LIBRARY_PATH:-}"
 
     echo "odin-rust-uv shell"

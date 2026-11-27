@@ -168,7 +168,6 @@
       htop
       kitty
       eza
-      telegram-desktop
       fzf
       starship
       lazygit
@@ -186,8 +185,6 @@
       zathura
       nushell
       docker
-      tor-browser
-      tmux
       helix
       unixtools.watch
       bat

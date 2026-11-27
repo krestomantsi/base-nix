@@ -38,7 +38,7 @@
   networking.networkmanager.enable = true;
 
   # ------------------------------------------------------------- storage ----
-  # Fixed data NVMe: mount independently of GNOME's login-time automount.
+  # Fixed data NVMe: mount independently of desktop login-time automount.
   fileSystems."/mnt/fakedrive" = {
     device = "/dev/disk/by-uuid/87596b17-e730-4390-8625-70704a893461";
     fsType = "ext4";
@@ -92,8 +92,14 @@
 
   # ------------------------------------------------------------ desktop -----
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+
+  # COSMIC desktop and greeter.
+  services.desktopManager.cosmic.enable = true;
+  services.displayManager.cosmic-greeter.enable = true;
+
+  # Previous GNOME setup, retained for easy rollback:
+  # services.displayManager.gdm.enable = true;
+  # services.desktopManager.gnome.enable = true;
 
   fonts.packages = with pkgs; [ nerd-fonts.fira-code roboto-mono cascadia-code ];
 
@@ -128,15 +134,15 @@
       "libvirtd"
     ];
     packages = with pkgs; [
-      # gnome
-      gnome-boxes
-      gnome-extension-manager
-      gnome-tweaks
-      gnomeExtensions.dash-to-dock
-      gnomeExtensions.caffeine
-      gnomeExtensions.blur-my-shell
-      gnomeExtensions.logo-menu
-      gnomeExtensions.paperwm
+      # Previous GNOME apps/extensions, retained but disabled for now:
+      # gnome-boxes
+      # gnome-extension-manager
+      # gnome-tweaks
+      # gnomeExtensions.dash-to-dock
+      # gnomeExtensions.caffeine
+      # gnomeExtensions.blur-my-shell
+      # gnomeExtensions.logo-menu
+      # gnomeExtensions.paperwm
 
       # general
       firefox-bin
@@ -150,7 +156,6 @@
       htop
       kitty
       eza
-      telegram-desktop
       fzf
       starship
       lazygit
@@ -167,8 +172,6 @@
       zathura
       nushell
       docker
-      tor-browser
-      tmux
       helix
       bat
       texliveFull
@@ -196,9 +199,10 @@
     ];
   };
 
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
+  # Previous GNOME autologin workaround, retained but disabled for COSMIC/Greetd:
+  # https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+  # systemd.services."getty@tty1".enable = false;
+  # systemd.services."autovt@tty1".enable = false;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -215,7 +219,7 @@
     protonup-ng
     lutris
     xdg-utils
-    # GNOME handles the clipboard; these expose it to CLI tools and editors.
+    # COSMIC manages the desktop clipboard; these expose it to CLI tools and editors.
     wl-clipboard # wl-copy / wl-paste in Wayland
     xclip        # legacy clients running through XWayland
     cmake
