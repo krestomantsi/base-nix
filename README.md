@@ -10,7 +10,7 @@ No flake files, no lockfile.
 | Host | Config | Rebuild |
 |---|---|---|
 | `framework` | `hosts/framework/` — Framework Desktop, full AMD (Ryzen AI Max / Strix Halo), COSMIC | `~/base-nix/hosts/framework/rebuild.sh` |
-| `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA | `~/base-nix/hosts/laptop/rebuild.sh` |
+| `laptop` | `hosts/laptop/` — AMD CPU + NVIDIA dGPU, CUDA, COSMIC | `~/base-nix/hosts/laptop/rebuild.sh` |
 | `raspberry` | `hosts/raspberry/` — Raspberry Pi 5 (`aarch64-linux`), minimal Sway + app host (`yggdrasil`, `rust_repo`, Tailscale) | `~/base-nix/hosts/raspberry/rebuild.sh` |
 
 All host configurations import `hosts/common/cli.nix`: it installs
@@ -97,6 +97,7 @@ Kept laptop-specific, deliberately different from the framework:
 
 | | laptop | framework |
 |---|---|---|
+| Desktop | COSMIC + COSMIC greeter | COSMIC + COSMIC greeter |
 | GPU | `services.xserver.videoDrivers = [ "nvidia" ]`, PRIME power management, `cudaSupport` + cuda cache | none (Radeon 8060S) |
 | `system.stateVersion` | **23.11** (install release — never bump) | 26.05 (fresh install) |
 | kernel | `linuxPackages_latest`, NVIDIA stable from the same kernel package set | `linuxPackages_latest` |
@@ -109,8 +110,8 @@ Both hosts follow `python3` rather than the old `python312` package and
 ### Wayland clipboard on both hosts
 
 `wl-clipboard` is installed system-wide for CLI/editor clipboard access, plus
-`xclip` for legacy XWayland clients. COSMIC on the Framework and GNOME on the
-laptop manage their desktop clipboards; no extra clipboard daemon is needed.
+`xclip` for legacy XWayland clients. COSMIC on both the Framework and laptop
+manages the desktop clipboard; no extra clipboard daemon is needed.
 After rebuilding, in a terminal inside the
 Wayland session:
 
@@ -346,10 +347,9 @@ rustup target add wasm32-unknown-unknown
   with recent ROCm but the closure is huge. Add `"render"`/`"video"` to the
   user's `extraGroups` when enabling it (already done in the framework host).
 - `hosts/framework` and `hosts/laptop` target **current unstable (26.05+)**.
-  Framework uses `services.desktopManager.cosmic` and
-  `services.displayManager.cosmic-greeter`; laptop uses
-  `services.desktopManager.gnome` and `services.displayManager.gdm`. Both use
-  current options/packages such as `services.pulseaudio`, `services.libinput`,
+  Both use `services.desktopManager.cosmic` and
+  `services.displayManager.cosmic-greeter`. They also use current
+  options/packages such as `services.pulseaudio`, `services.libinput`,
   `transmission_4-gtk`, `protonup-ng` and `libglvnd`. On an older channel those
   are `services.xserver.*` / `transmission-gtk` / `protonup` / `libEGL` — both
   hosts' `rebuild.sh` scripts keep the channel current automatically.
